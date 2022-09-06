@@ -1,2 +1,1 @@
 # blockchain-indexer
-Blockchain indexer

@@ -1,0 +1,64 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Blockchain Indexer API",
+        "contact": {
+            "name": "Daniel Lee",
+            "email": "daniel@internet.ru"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {
+        "/api/v1/transactions": {
+            "get": {
+                "description": "Returns transactions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transactions.GetTransactionsResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httperr.Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "httperr.Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "transactions.GetTransactionsResp": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

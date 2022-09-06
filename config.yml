@@ -1,0 +1,43 @@
+log_level: debug
+
+port: 8420
+
+gin:
+  mode: debug # Possible values: "release", "debug"
+
+swagger:
+  hostname: localhost:8420
+
+sentry:
+  dsn:
+  sample_rate: 1
+
+database:
+  url: postgresql://user:password@localhost:5432/postgres?sslmode=disable
+  log: false
+
+kafka:
+    brokers: ["localhost:9092"]
+    blocks_topic_prefix: blocks-topic-
+    max_attempts: 5
+    message_max_bytes: 15728640 # Message max bytes to produce # 15MB
+
+prometheus:
+  namespace: blockchain_indexer
+  subsystem: # Possible values: "api", "worker", "parser"
+
+  pushgateway:
+    url: localhost:9091
+    key: # X-API-Key
+    push_interval: 30s
+
+block_producer:
+  fetch_blocks_max: 10
+  fetch_interval: 10ms
+
+  block_retry: 10
+  block_retry_interval: 5s
+
+platforms:
+  smartchain:
+    node: https://bsc-dataseed1.binance.org

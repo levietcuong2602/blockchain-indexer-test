@@ -1,0 +1,103 @@
+service:
+  golangci-lint-version: 1.48.0
+
+run:
+  tests: false
+  modules-download-mode: readonly
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  funlen:
+    lines: 100
+    statements: 75
+  gofumpt:
+    extra-rules: true
+  govet:
+    check-shadowing: true
+    enable-all: true
+    disable:
+      - fieldalignment
+  misspell:
+    locale: US
+    ignore-words:
+  nolintlint:
+    allow-unused: false
+    allow-leading-space: true
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/unanoc)
+  unparam:
+    check-exported: true
+  unused:
+    check-exported: true
+  errorlint:
+    errorf: true
+  gocyclo:
+    min-complexity: 25
+  wrapcheck:
+    ignorePackageGlobs:
+      - github.com/unanoc/*
+issues:
+  new: false
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - asciicheck
+    - bodyclose
+    - dogsled
+    - dupl
+    - durationcheck
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forcetypeassert
+    - funlen
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - goerr113
+    - gofmt
+    - gofumpt
+    - goimports
+    # - gomnd
+    - goprintffuncname
+    - gosec
+    - importas
+    - lll
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nilerr
+    - nlreturn
+    - nolintlint
+    - paralleltest
+    - prealloc
+    - predeclared
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - stylecheck
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - wastedassign
+    - whitespace
+    - wrapcheck

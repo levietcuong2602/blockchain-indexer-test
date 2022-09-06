@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile_api
+    ports:
+      - 8420:8420
+    environment:
+      - PROMETHEUS_SUBSYSTEM=api
+      - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
+    depends_on:
+      - postgres
+      - prometheus
+      - grafana
+      - pushgateway
+    restart: unless-stopped
+    command: make start-api
+
+  parser:
+    container_name: parser
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile_parser
+    environment:
+      - PROMETHEUS_SUBSYSTEM=parser
+      - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
+      - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
+    depends_on:
+      - postgres
+      - prometheus
+      - grafana
+      - pushgateway
+    restart: unless-stopped
+    command: make start-parser
+
+  postgres:
+    container_name: postgres
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: postgres
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./configs/grafana/provisioning:/etc/grafana/provisioning
+      - ./configs/grafana/dashboards:/var/lib/grafana/dashboards
+
+  pushgateway:
+    container_name: pushgateway
+    image: prom/pushgateway:latest
+    ports:
+      - 9091:9091

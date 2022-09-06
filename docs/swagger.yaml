@@ -1,0 +1,41 @@
+basePath: /
+definitions:
+  httperr.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  transactions.GetTransactionsResp:
+    properties:
+      status_code:
+        type: integer
+    type: object
+info:
+  contact:
+    email: daniel@internet.ru
+    name: Daniel Lee
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Blockchain Indexer API
+  version: "1.0"
+paths:
+  /api/v1/transactions:
+    get:
+      description: Returns transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/transactions.GetTransactionsResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperr.Error'
+      tags:
+      - Transactions
+swagger: "2.0"
