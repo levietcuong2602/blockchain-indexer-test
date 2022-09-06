@@ -6,11 +6,14 @@ import (
 )
 
 const (
-	labelChain   = "chain"
-	labelPath    = "path"
-	labelStatus  = "status"
-	labelHost    = "host"
-	labelVersion = "version"
+	labelChain     = "chain"
+	labelPath      = "path"
+	labelStatus    = "status"
+	labelHost      = "host"
+	labelVersion   = "version"
+	labelTopic     = "topic"
+	labelPartition = "partition"
+	labelOffset    = "offset"
 )
 
 // Prometheus is a struct for prometheus metrics.
@@ -23,10 +26,14 @@ type Prometheus struct {
 	responseStatus *prometheus.CounterVec
 	responseTime   *prometheus.HistogramVec
 
-	// Parser metrics
-	lastFetchedBlock *prometheus.GaugeVec
-	currentNodeBlock *prometheus.GaugeVec
-	messageSizeBytes *prometheus.GaugeVec
+	// Blockproducer metrics
+	lastFetchedBlock      *prometheus.GaugeVec
+	currentNodeBlock      *prometheus.GaugeVec
+	kafkaMessageSizeBytes *prometheus.GaugeVec
+
+	// Blockconsumer metrics
+	topicPartitionOffset *prometheus.GaugeVec
+	topicLag             *prometheus.GaugeVec
 }
 
 // NewPrometheus return an instance of Prometheus with registered metrics.

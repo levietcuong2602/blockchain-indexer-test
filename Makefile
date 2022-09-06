@@ -44,17 +44,30 @@ go-build-api:
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/api ./cmd/api
 
 # ---------------------------------------------------------
-# Parser
+# Blockproducer
 # ---------------------------------------------------------
-parser: go-build-parser start-parser
+blockproducer: go-build-blockproducer start-blockproducer
 
-start-parser:
-	@echo "  >  Starting parser"
-	PROMETHEUS_SUBSYSTEM=parser $(GOBIN)/parser
+start-blockproducer:
+	@echo "  >  Starting blockproducer"
+	PROMETHEUS_SUBSYSTEM=blockproducer $(GOBIN)/blockproducer
 
-go-build-parser:
-	@echo "  >  Building parser binary..."
-	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/parser ./cmd/parser
+go-build-blockproducer:
+	@echo "  >  Building blockproducer binary..."
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/blockproducer ./cmd/blockproducer
+
+# ---------------------------------------------------------
+# Blockconsumer
+# ---------------------------------------------------------
+blockconsumer: go-build-blockconsumer start-blockconsumer
+
+start-blockconsumer:
+	@echo "  >  Starting blockconsumer"
+	PROMETHEUS_SUBSYSTEM=blockconsumer $(GOBIN)/blockconsumer
+
+go-build-blockconsumer:
+	@echo "  >  Building blockconsumer binary..."
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/blockconsumer ./cmd/blockconsumer
 
 # ---------------------------------------------------------
 # Code Checking

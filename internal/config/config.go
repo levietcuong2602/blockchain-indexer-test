@@ -31,10 +31,11 @@ type Config struct {
 	} `mapstructure:"database"`
 
 	Kafka struct {
-		Brokers           []string `mapstructure:"brokers"`
-		BlocksTopicPrefix string   `mapstructure:"blocks_topic_prefix"`
-		MaxAttempts       int      `mapstructure:"max_attempts"`
-		MessageMaxBytes   int      `mapstructure:"message_max_bytes"`
+		Brokers           []string      `mapstructure:"brokers"`
+		BlocksTopicPrefix string        `mapstructure:"blocks_topic_prefix"`
+		MaxAttempts       int           `mapstructure:"max_attempts"`
+		MessageMaxBytes   int           `mapstructure:"message_max_bytes"`
+		RetentionTime     time.Duration `mapstructure:"retention_time"`
 	} `mapstructure:"kafka"`
 
 	Prometheus struct {
@@ -49,11 +50,15 @@ type Config struct {
 	} `mapstructure:"prometheus"`
 
 	BlockProducer struct {
+		Interval           time.Duration `mapstructure:"interval"`
 		FetchBlocksMax     int64         `mapstructure:"fetch_blocks_max"`
-		FetchInterval      time.Duration `mapstructure:"fetch_interval"`
 		BlockRetryNum      int           `mapstructure:"block_retry"`
 		BlockRetryInterval time.Duration `mapstructure:"block_retry_interval"`
 	} `mapstructure:"block_producer"`
+
+	BlockConsumer struct {
+		Interval time.Duration `mapstructure:"interval"`
+	} `mapstructure:"block_consumer"`
 
 	Platforms struct {
 		Smartchain struct {

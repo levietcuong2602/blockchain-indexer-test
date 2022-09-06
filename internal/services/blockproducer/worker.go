@@ -46,7 +46,7 @@ func NewWorker(db *postgres.Database, kafka *kafka.Writer,
 	}
 
 	opts := &worker.Options{
-		Interval:        config.Default.BlockProducer.FetchInterval,
+		Interval:        config.Default.BlockProducer.Interval,
 		RunImmediately:  true,
 		RunConsequently: false,
 	}
@@ -275,7 +275,7 @@ func (w *Worker) writeBlockToKafka(ctx context.Context, block BlockData) error {
 		"block_size": len(block.Data),
 	}).Info("Produced to Kafka")
 
-	w.prometheus.SetBlocksParserMessageSizeBytes(chain, len(block.Data))
+	w.prometheus.SetKafkaMessageSizeBytes(chain, len(block.Data))
 
 	return nil
 }

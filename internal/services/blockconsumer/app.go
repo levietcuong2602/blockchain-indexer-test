@@ -1,4 +1,4 @@
-package blockproducer
+package blockconsumer
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 
 	"github.com/unanoc/blockchain-indexer/internal/config"
 	"github.com/unanoc/blockchain-indexer/internal/prometheus"
-	"github.com/unanoc/blockchain-indexer/internal/repository"
 	"github.com/unanoc/blockchain-indexer/internal/repository/postgres"
 	"github.com/unanoc/blockchain-indexer/internal/services"
 	"github.com/unanoc/blockchain-indexer/pkg/metrics"
@@ -34,12 +33,8 @@ func NewApp() *App {
 
 	platforms := platform.InitPlatforms()
 
-	if err := initBlockTrackers(context.Background(), db, platforms); err != nil {
-		log.WithError(err).Warn("Block trackers init error")
-	}
-
 	prometheus := prometheus.NewPrometheus(config.Default.Prometheus.NameSpace, config.Default.Prometheus.SubSystem)
-	prometheus.RegisterBlocksProducerMetrics()
+	prometheus.RegisterBlocksConsumerMetrics()
 
 	metricsPusher, err2 := metrics.InitDefaultMetricsPusher(
 		config.Default.Prometheus.PushGateway.URL,
@@ -51,15 +46,17 @@ func NewApp() *App {
 		log.WithError(err2).Warn("Metrics pusher init error")
 	}
 
-	kafka := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:      config.Default.Kafka.Brokers,
-		MaxAttempts:  config.Default.Kafka.MaxAttempts,
-		BatchBytes:   config.Default.Kafka.MessageMaxBytes,
-		RequiredAcks: -1,
-	})
-
 	workers := make([]worker.Worker, 0, len(platforms))
 	for _, pl := range platforms {
+		kafka := kafka.NewReader(kafka.ReaderConfig{
+			Brokers:       config.Default.Kafka.Brokers,
+			MaxAttempts:   config.Default.Kafka.MaxAttempts,
+			Topic:         fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, pl.GetChain()),
+			GroupID:       string(pl.GetChain()),
+			StartOffset:   kafka.FirstOffset,
+			RetentionTime: config.Default.Kafka.RetentionTime,
+		})
+
 		workers = append(workers, NewWorker(db, kafka, prometheus, pl))
 	}
 
@@ -79,25 +76,4 @@ func (a *App) Run(ctx context.Context) {
 			a.metricsPusher.Start(ctx, wg)
 		}
 	})
-}
-
-func initBlockTrackers(ctx context.Context, db repository.Storage, platforms platform.Platforms) error {
-	for _, pl := range platforms {
-		tracker, err := db.GetBlockTracker(ctx, pl.GetChain())
-		if err != nil {
-			if !postgres.IsErrNotFound(err) {
-				return fmt.Errorf("failed to get block tracker: %w", err)
-			}
-		}
-
-		if tracker != nil {
-			continue
-		}
-
-		if err = db.UpsertBlockTracker(ctx, pl.GetChain(), 0); err != nil {
-			return fmt.Errorf("failed to insert block tracker: %w", err)
-		}
-	}
-
-	return nil
 }

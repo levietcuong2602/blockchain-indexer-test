@@ -21,6 +21,7 @@ kafka:
     blocks_topic_prefix: blocks-topic-
     max_attempts: 5
     message_max_bytes: 15728640 # Message max bytes to produce # 15MB
+    retention_time: 720h # Time to store cosumer group in broker (if all consumers are inactive)
 
 prometheus:
   namespace: blockchain_indexer
@@ -32,11 +33,14 @@ prometheus:
     push_interval: 30s
 
 block_producer:
+  interval: 10ms
   fetch_blocks_max: 10
-  fetch_interval: 10ms
 
   block_retry: 10
   block_retry_interval: 5s
+
+block_consumer:
+  interval: 1ms
 
 platforms:
   smartchain:

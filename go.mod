@@ -2,7 +2,11 @@ module github.com/unanoc/blockchain-indexer
 
 go 1.17
 
-require github.com/prometheus/client_golang v1.13.0
+require (
+	github.com/getsentry/raven-go v0.2.0
+	github.com/prometheus/client_golang v1.13.0
+	github.com/swaggo/swag v1.8.1
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -11,7 +15,6 @@ require (
 	github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
-	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
@@ -53,7 +56,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
-	github.com/swaggo/swag v1.8.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/net v0.0.0-20220706163947-c90051bbdb60 // indirect

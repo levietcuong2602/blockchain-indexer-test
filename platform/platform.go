@@ -1,7 +1,9 @@
 package platform
 
 import (
+	"github.com/unanoc/blockchain-indexer/internal/config"
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/blockchain/types"
+	"github.com/unanoc/blockchain-indexer/platform/ethereum"
 )
 
 type (
@@ -15,5 +17,7 @@ type (
 )
 
 func InitPlatforms() Platforms {
-	return Platforms{}
+	return Platforms{
+		types.BSC: ethereum.InitPlatform(types.BSC, config.Default.Platforms.Smartchain.Node),
+	}
 }

@@ -20,22 +20,43 @@ services:
     restart: unless-stopped
     command: make start-api
 
-  parser:
-    container_name: parser
+  blockproducer:
+    container_name: blockproducer
     build:
       context: .
-      dockerfile: deployment/Dockerfile_parser
+      dockerfile: deployment/Dockerfile_blockproducer
     environment:
-      - PROMETHEUS_SUBSYSTEM=parser
+      - PROMETHEUS_SUBSYSTEM=blockproducer
       - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
       - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
     depends_on:
       - postgres
+      - zookeeper
+      - kafka
       - prometheus
       - grafana
       - pushgateway
     restart: unless-stopped
-    command: make start-parser
+    command: make start-blockproducer
+
+  blockconsumer:
+    container_name: blockconsumer
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile_blockconsumer
+    environment:
+      - PROMETHEUS_SUBSYSTEM=blockconsumer
+      - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
+      - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+      - prometheus
+      - grafana
+      - pushgateway
+    restart: unless-stopped
+    command: make start-blockconsumer
 
   postgres:
     container_name: postgres
@@ -47,6 +68,32 @@ services:
       POSTGRES_DB: postgres
     ports:
       - ${POSTGRES_PORT:-5432}:5432
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+
+      - KAFKA_MESSAGE_MAX_BYTES=15728640 # set message.max.bytes to 15MB
+      - KAFKA_MAX_REQUEST_SIZE=15728640 # set max.request.size to 15MB
+      - KAFKA_PRODUCER_MAX_REQUEST_SIZE=15728640 # set producer max.request.size to 15MB
+      - CONNECT_PRODUCER_MAX_REQUEST_SIZE=15728640 # set producer max.request.size to 15MB
+    depends_on:
+      - zookeeper
 
   prometheus:
     container_name: prometheus
