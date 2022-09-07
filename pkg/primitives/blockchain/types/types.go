@@ -3,7 +3,7 @@ package types
 type ChainType string
 
 const (
-	BSC = ChainType("BSC")
+	BSC = ChainType("bsc")
 )
 
 //nolint:gochecknoglobals

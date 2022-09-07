@@ -35,7 +35,7 @@ func (p *Prometheus) RegisterAPIMetrics() {
 
 func GinMetricsMiddleware(prometheus *Prometheus) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		path := c.Request.URL.String()
+		path := c.Request.URL.Path
 		for _, param := range c.Params {
 			path = strings.ReplaceAll(path, param.Value, ":"+param.Key)
 		}

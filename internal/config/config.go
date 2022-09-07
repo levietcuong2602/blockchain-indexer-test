@@ -31,7 +31,7 @@ type Config struct {
 	} `mapstructure:"database"`
 
 	Kafka struct {
-		Brokers           []string      `mapstructure:"brokers"`
+		Brokers           string        `mapstructure:"brokers"`
 		BlocksTopicPrefix string        `mapstructure:"blocks_topic_prefix"`
 		MaxAttempts       int           `mapstructure:"max_attempts"`
 		MessageMaxBytes   int           `mapstructure:"message_max_bytes"`
@@ -51,6 +51,7 @@ type Config struct {
 
 	BlockProducer struct {
 		Interval           time.Duration `mapstructure:"interval"`
+		BackoffInterval    time.Duration `mapstructure:"backoff_interval"`
 		FetchBlocksMax     int64         `mapstructure:"fetch_blocks_max"`
 		BlockRetryNum      int           `mapstructure:"block_retry"`
 		BlockRetryInterval time.Duration `mapstructure:"block_retry_interval"`

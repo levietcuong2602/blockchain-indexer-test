@@ -3,6 +3,7 @@ package blockconsumer
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/segmentio/kafka-go"
@@ -49,7 +50,7 @@ func NewApp() *App {
 	workers := make([]worker.Worker, 0, len(platforms))
 	for _, pl := range platforms {
 		kafka := kafka.NewReader(kafka.ReaderConfig{
-			Brokers:       config.Default.Kafka.Brokers,
+			Brokers:       strings.Split(config.Default.Kafka.Brokers, ","),
 			MaxAttempts:   config.Default.Kafka.MaxAttempts,
 			Topic:         fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, pl.GetChain()),
 			GroupID:       string(pl.GetChain()),

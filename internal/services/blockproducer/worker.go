@@ -55,6 +55,16 @@ func NewWorker(db *postgres.Database, kafka *kafka.Writer,
 }
 
 func (w *Worker) run(ctx context.Context) error {
+	if err := w.fetch(ctx); err != nil {
+		time.Sleep(config.Default.BlockProducer.BackoffInterval)
+
+		return err
+	}
+
+	return nil
+}
+
+func (w *Worker) fetch(ctx context.Context) error {
 	chain := w.API.GetChain()
 
 	tracker, err := w.db.GetBlockTracker(ctx, chain)
@@ -260,11 +270,10 @@ func (w *Worker) writeBlockToKafka(ctx context.Context, block BlockData) error {
 
 	topic := fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, chain)
 
-	err := w.kafka.WriteMessages(ctx, kafka.Message{
+	if err := w.kafka.WriteMessages(ctx, kafka.Message{
 		Value: block.Data,
 		Topic: topic,
-	})
-	if err != nil {
+	}); err != nil {
 		return fmt.Errorf("failed to write message to Kafka: %w", err)
 	}
 

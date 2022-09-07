@@ -3,6 +3,7 @@ package blockproducer
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/segmentio/kafka-go"
@@ -52,11 +53,13 @@ func NewApp() *App {
 	}
 
 	kafka := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:      config.Default.Kafka.Brokers,
+		Brokers:      strings.Split(config.Default.Kafka.Brokers, ","),
 		MaxAttempts:  config.Default.Kafka.MaxAttempts,
 		BatchBytes:   config.Default.Kafka.MessageMaxBytes,
 		RequiredAcks: -1,
+		Logger:       log.New(),
 	})
+	kafka.AllowAutoTopicCreation = true
 
 	workers := make([]worker.Worker, 0, len(platforms))
 	for _, pl := range platforms {

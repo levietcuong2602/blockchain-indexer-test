@@ -17,11 +17,11 @@ database:
   log: false
 
 kafka:
-    brokers: ["localhost:9092"]
-    blocks_topic_prefix: blocks-topic-
-    max_attempts: 5
-    message_max_bytes: 15728640 # Message max bytes to produce # 15MB
-    retention_time: 720h # Time to store cosumer group in broker (if all consumers are inactive)
+  brokers: localhost:9092
+  blocks_topic_prefix: blocks-topic-
+  max_attempts: 5
+  message_max_bytes: 15728640 # Message max bytes to produce # 15MB
+  retention_time: 720h # Time to store cosumer group in broker (if all consumers are inactive)
 
 prometheus:
   namespace: blockchain_indexer
@@ -33,7 +33,8 @@ prometheus:
     push_interval: 30s
 
 block_producer:
-  interval: 10ms
+  interval: 1ms
+  backoff_interval: 10s
   fetch_blocks_max: 10
 
   block_retry: 10
@@ -44,4 +45,4 @@ block_consumer:
 
 platforms:
   smartchain:
-    node: https://bsc-dataseed1.binance.org
+    node: https://bsc-dataseed2.binance.org
