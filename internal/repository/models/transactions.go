@@ -1,12 +1,10 @@
 package models
 
-import "github.com/unanoc/blockchain-indexer/pkg/primitives/blockchain/types"
-
 type Transaction struct {
-	Hash           string          `gorm:"primary_key"`
-	Chain          types.ChainType `gorm:"not_null"`
-	Sender         string          `gorm:"type:varchar(256); not_null"`
-	Recipient      string          `gorm:"type:varchar(256); not_null"`
+	Hash           string `gorm:"primary_key"`
+	Chain          string `gorm:"not_null"`
+	Sender         string `gorm:"type:varchar(256); not_null"`
+	Recipient      string `gorm:"type:varchar(256); not_null"`
 	Block          uint64
 	BlockCreatedAt int64
 	Asset          string

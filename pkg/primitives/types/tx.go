@@ -1,5 +1,7 @@
 package types
 
+import "github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
+
 type (
 	Amount          string
 	Asset           string
@@ -10,6 +12,9 @@ type (
 const (
 	StatusSuccess Status = "success"
 	StatusError   Status = "error"
+
+	TxTransfer     TransactionType = "transfer"
+	TxContractCall TransactionType = "contract_call"
 )
 
 type (
@@ -34,7 +39,21 @@ type (
 	}
 
 	Fee struct {
-		Asset  Asset  `json:"asset"`
-		Amount Amount `json:"amount"`
+		Asset  coin.AssetID `json:"asset"`
+		Amount Amount       `json:"amount"`
+	}
+)
+
+// Tx metadata types
+type (
+	Transfer struct {
+		Asset coin.AssetID `json:"asset"`
+		Value Amount       `json:"value"`
+	}
+
+	ContractCall struct {
+		Asset coin.AssetID `json:"asset"`
+		Value Amount       `json:"value"`
+		Input string       `json:"input"`
 	}
 )

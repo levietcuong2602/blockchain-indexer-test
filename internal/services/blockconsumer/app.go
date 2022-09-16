@@ -52,8 +52,8 @@ func NewApp() *App {
 		kafka := kafka.NewReader(kafka.ReaderConfig{
 			Brokers:       strings.Split(config.Default.Kafka.Brokers, ","),
 			MaxAttempts:   config.Default.Kafka.MaxAttempts,
-			Topic:         fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, pl.GetChain()),
-			GroupID:       string(pl.GetChain()),
+			Topic:         fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, pl.Coin().Handle),
+			GroupID:       pl.Coin().Handle,
 			StartOffset:   kafka.FirstOffset,
 			RetentionTime: config.Default.Kafka.RetentionTime,
 		})

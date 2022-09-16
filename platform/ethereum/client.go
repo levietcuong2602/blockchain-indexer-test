@@ -6,8 +6,8 @@ import (
 	"math/big"
 
 	"github.com/unanoc/blockchain-indexer/pkg/client"
-	"github.com/unanoc/blockchain-indexer/pkg/primitives/blockchain/types"
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/strings"
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/types"
 )
 
 const (

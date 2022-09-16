@@ -7,10 +7,9 @@ import (
 	"gorm.io/gorm/clause"
 
 	"github.com/unanoc/blockchain-indexer/internal/repository/models"
-	"github.com/unanoc/blockchain-indexer/pkg/primitives/blockchain/types"
 )
 
-func (d *Database) GetBlockTracker(ctx context.Context, chain types.ChainType) (*models.BlockTracker, error) {
+func (d *Database) GetBlockTracker(ctx context.Context, chain string) (*models.BlockTracker, error) {
 	var tracker models.BlockTracker
 
 	if err := d.Gorm.
@@ -23,7 +22,7 @@ func (d *Database) GetBlockTracker(ctx context.Context, chain types.ChainType) (
 	return &tracker, nil
 }
 
-func (d *Database) UpsertBlockTracker(ctx context.Context, chain types.ChainType, height int64) error {
+func (d *Database) UpsertBlockTracker(ctx context.Context, chain string, height int64) error {
 	tracker := models.BlockTracker{Chain: chain, Height: height}
 
 	if err := d.Gorm.WithContext(ctx).Clauses(clause.OnConflict{

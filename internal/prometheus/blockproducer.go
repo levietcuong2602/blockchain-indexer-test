@@ -3,8 +3,6 @@ package prometheus
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-
-	"github.com/unanoc/blockchain-indexer/pkg/primitives/blockchain/types"
 )
 
 func (p *Prometheus) RegisterBlocksProducerMetrics() {
@@ -31,20 +29,20 @@ func (p *Prometheus) RegisterBlocksProducerMetrics() {
 	)
 }
 
-func (p *Prometheus) SetLastFetchedBlock(chain types.ChainType, block int64) {
+func (p *Prometheus) SetLastFetchedBlock(chain string, block int64) {
 	p.lastFetchedBlock.With(prometheus.Labels{
-		labelChain: string(chain),
+		labelChain: chain,
 	}).Set(float64(block))
 }
 
-func (p *Prometheus) SetCurrentNodeBlock(chain types.ChainType, block int64) {
+func (p *Prometheus) SetCurrentNodeBlock(chain string, block int64) {
 	p.currentNodeBlock.With(prometheus.Labels{
-		labelChain: string(chain),
+		labelChain: chain,
 	}).Set(float64(block))
 }
 
-func (p *Prometheus) SetKafkaMessageSizeBytes(chain types.ChainType, size int) {
+func (p *Prometheus) SetKafkaMessageSizeBytes(chain string, size int) {
 	p.kafkaMessageSizeBytes.With(prometheus.Labels{
-		labelChain: string(chain),
+		labelChain: chain,
 	}).Set(float64(size))
 }

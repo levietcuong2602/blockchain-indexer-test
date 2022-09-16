@@ -1,0 +1,48 @@
+- id: 60
+  symbol: ETH
+  handle: ethereum
+  name: Ethereum
+  decimals: 18
+  blockTime: 10000
+  blockchain: Ethereum
+
+- id: 118
+  symbol: ATOM
+  handle: cosmos
+  name: Cosmos
+  decimals: 6
+  blockTime: 5000
+  blockchain: Cosmos
+
+- id: 714
+  symbol: BNB
+  handle: binance
+  name: BNB
+  decimals: 8
+  blockTime: 1000
+  minConfirmations: 2
+  blockchain: Binance
+
+- id: 0
+  symbol: BTC
+  handle: bitcoin
+  name: Bitcoin
+  decimals: 8
+  blockTime: 600000
+  blockchain: Bitcoin
+
+- id: 501
+  symbol: SOL
+  handle: solana
+  name: Solana
+  decimals: 9
+  blockTime: 500
+  blockchain: Solana
+
+- id: 20000714
+  symbol: BNB
+  handle: smartchain
+  name: 'Smart Chain'
+  decimals: 18
+  blockTime: 3000
+  blockchain: Ethereum

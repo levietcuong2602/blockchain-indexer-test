@@ -104,3 +104,10 @@ swag:
 up:
 	@echo "  >  Run local environment"
 	docker-compose -f ${DOCKER_COMPOSE_FILE_LOCAL_ENV} up -d
+
+# ---------------------------------------------------------
+# Code generation
+# ---------------------------------------------------------
+generate-coins:
+	@echo "  >  Generating coin file"
+	GOBIN=$(GOBIN) go run -tags=coins pkg/primitives/coin/gen.go

@@ -2,22 +2,22 @@ package ethereum
 
 import (
 	"github.com/unanoc/blockchain-indexer/pkg/client"
-	"github.com/unanoc/blockchain-indexer/pkg/primitives/blockchain/types"
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
 	"github.com/unanoc/blockchain-indexer/pkg/sentry"
 )
 
 type Platform struct {
-	chain  types.ChainType
+	coin   uint
 	client Client
 }
 
-func InitPlatform(chain types.ChainType, url string) *Platform {
+func InitPlatform(coin uint, url string) *Platform {
 	return &Platform{
-		chain:  chain,
+		coin:   coin,
 		client: Client{client.InitClient(url, sentry.DefaultSentryErrorHandler())},
 	}
 }
 
-func (p Platform) GetChain() types.ChainType {
-	return p.chain
+func (p Platform) Coin() coin.Coin {
+	return coin.Coins[p.coin]
 }

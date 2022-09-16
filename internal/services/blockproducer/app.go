@@ -86,7 +86,7 @@ func (a *App) Run(ctx context.Context) {
 
 func initBlockTrackers(ctx context.Context, db repository.Storage, platforms platform.Platforms) error {
 	for _, pl := range platforms {
-		tracker, err := db.GetBlockTracker(ctx, pl.GetChain())
+		tracker, err := db.GetBlockTracker(ctx, pl.Coin().Handle)
 		if err != nil {
 			if !postgres.IsErrNotFound(err) {
 				return fmt.Errorf("failed to get block tracker: %w", err)
@@ -97,7 +97,7 @@ func initBlockTrackers(ctx context.Context, db repository.Storage, platforms pla
 			continue
 		}
 
-		if err = db.UpsertBlockTracker(ctx, pl.GetChain(), 0); err != nil {
+		if err = db.UpsertBlockTracker(ctx, pl.Coin().Handle, 0); err != nil {
 			return fmt.Errorf("failed to insert block tracker: %w", err)
 		}
 	}

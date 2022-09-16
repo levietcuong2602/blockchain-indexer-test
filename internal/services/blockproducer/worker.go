@@ -33,7 +33,7 @@ type Worker struct {
 
 func NewWorker(db *postgres.Database, k *kafka.Writer, p *prometheus.Prometheus, pl platform.Platform) worker.Worker {
 	w := &Worker{
-		log:        log.WithFields(log.Fields{"worker": workerName, "chain": pl.GetChain()}),
+		log:        log.WithFields(log.Fields{"worker": workerName, "chain": pl.Coin().Handle}),
 		db:         db,
 		kafka:      k,
 		prometheus: p,
@@ -60,7 +60,7 @@ func (w *Worker) run(ctx context.Context) error {
 }
 
 func (w *Worker) fetch(ctx context.Context) error {
-	chain := w.API.GetChain()
+	chain := w.API.Coin().Handle
 
 	tracker, err := w.db.GetBlockTracker(ctx, chain)
 	if err != nil {
@@ -115,7 +115,7 @@ func (w *Worker) fetch(ctx context.Context) error {
 }
 
 func (w *Worker) getBlocksIntervalToFetch(tracker *models.BlockTracker) (int64, int64, error) {
-	chain := w.API.GetChain()
+	chain := w.API.Coin().Handle
 	lastParsedBlock := tracker.Height
 
 	currentBlock, err := w.API.GetCurrentBlockNumber()
@@ -158,7 +158,7 @@ type BlockData struct {
 }
 
 func (w *Worker) fetchBlocks(fromBlock, toBlock int64) ([]BlockData, error) {
-	chain := w.API.GetChain()
+	chain := w.API.Coin().Handle
 
 	blocksCount := toBlock - fromBlock + 1
 
@@ -232,7 +232,7 @@ func (w *Worker) fetchBlock(num int64, blocksChan chan<- BlockData) error {
 }
 
 func (w *Worker) getBlockByNumberWithRetry(attempts int, sleep time.Duration, num int64) ([]byte, error) {
-	chain := w.API.GetChain()
+	chain := w.API.Coin().Handle
 
 	block, err := w.API.GetBlockByNumber(num)
 	if err != nil {
@@ -261,7 +261,7 @@ func (w *Worker) getBlockByNumberWithRetry(attempts int, sleep time.Duration, nu
 }
 
 func (w *Worker) writeBlockToKafka(ctx context.Context, block BlockData) error {
-	chain := w.API.GetChain()
+	chain := w.API.Coin().Handle
 
 	topic := fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, chain)
 

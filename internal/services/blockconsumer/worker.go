@@ -32,7 +32,7 @@ func NewWorker(db *postgres.Database, kafka *kafka.Reader,
 	w := &Worker{
 		log: log.WithFields(log.Fields{
 			"worker": workerName,
-			"chain":  pl.GetChain(),
+			"chain":  pl.Coin().Handle,
 		}),
 		db:         db,
 		kafka:      kafka,
@@ -55,12 +55,10 @@ func (w *Worker) run(ctx context.Context) error {
 		return fmt.Errorf("failed to fetch kafka message: %w", err)
 	}
 
-	fmt.Println(string(message.Value))
-
-	// txs, err := w.API.NormalizeRawBlock(message.Value)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to normalize raw block: %w", err)
-	// }
+	txs, err := w.API.NormalizeRawBlock(message.Value)
+	if err != nil {
+		return fmt.Errorf("failed to normalize raw block: %w", err)
+	}
 
 	// txs.CleanMemos()
 
@@ -72,8 +70,8 @@ func (w *Worker) run(ctx context.Context) error {
 	}
 
 	log.WithFields(log.Fields{
-		"chain": w.API.GetChain(),
-		// "txs":       len(txs),
+		"chain":     w.API.Coin().Handle,
+		"txs":       len(txs),
 		"partition": message.Partition,
 		"offset":    message.Offset,
 	}).Info("Transactions have been consumed")
