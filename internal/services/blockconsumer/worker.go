@@ -2,6 +2,7 @@ package blockconsumer
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -49,5 +50,33 @@ func NewWorker(db *postgres.Database, kafka *kafka.Reader,
 }
 
 func (w *Worker) run(ctx context.Context) error {
+	message, err := w.kafka.FetchMessage(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to fetch kafka message: %w", err)
+	}
+
+	fmt.Println(string(message.Value))
+
+	// txs, err := w.API.NormalizeRawBlock(message.Value)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to normalize raw block: %w", err)
+	// }
+
+	// txs.CleanMemos()
+
+	// Send to queue or save in database HERE
+
+	if err = w.kafka.CommitMessages(ctx, message); err != nil {
+		return fmt.Errorf("failed to commit kafka message (topic=%s offset=%d partition=%d): %w",
+			message.Topic, message.Offset, message.Partition, err)
+	}
+
+	log.WithFields(log.Fields{
+		"chain": w.API.GetChain(),
+		// "txs":       len(txs),
+		"partition": message.Partition,
+		"offset":    message.Offset,
+	}).Info("Transactions have been consumed")
+
 	return nil
 }

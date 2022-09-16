@@ -31,16 +31,11 @@ type Worker struct {
 	API        platform.Platform
 }
 
-func NewWorker(db *postgres.Database, kafka *kafka.Writer,
-	p *prometheus.Prometheus, pl platform.Platform,
-) worker.Worker {
+func NewWorker(db *postgres.Database, k *kafka.Writer, p *prometheus.Prometheus, pl platform.Platform) worker.Worker {
 	w := &Worker{
-		log: log.WithFields(log.Fields{
-			"worker": workerName,
-			"chain":  pl.GetChain(),
-		}),
+		log:        log.WithFields(log.Fields{"worker": workerName, "chain": pl.GetChain()}),
 		db:         db,
-		kafka:      kafka,
+		kafka:      k,
 		prometheus: p,
 		API:        pl,
 	}

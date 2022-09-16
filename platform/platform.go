@@ -11,6 +11,7 @@ type (
 		GetChain() types.ChainType
 		GetCurrentBlockNumber() (int64, error)
 		GetBlockByNumber(num int64) ([]byte, error)
+		// NormalizeRawBlock(rawBlock []byte) (types.Txs, error)
 	}
 
 	Platforms map[types.ChainType]Platform

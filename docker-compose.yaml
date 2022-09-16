@@ -40,24 +40,25 @@ services:
     restart: unless-stopped
     command: make start-blockproducer
 
-  # blockconsumer:
-  #   container_name: blockconsumer
-  #   build:
-  #     context: .
-  #     dockerfile: deployment/Dockerfile_blockconsumer
-  #   environment:
-  #     - PROMETHEUS_SUBSYSTEM=blockconsumer
-  #     - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
-  #     - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
-  #   depends_on:
-  #     - postgres
-  #     - zookeeper
-  #     - kafka
-  #     - prometheus
-  #     - grafana
-  #     - pushgateway
-  #   restart: unless-stopped
-  #   command: make start-blockconsumer
+  blockconsumer:
+    container_name: blockconsumer
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile_blockconsumer
+    environment:
+      - PROMETHEUS_SUBSYSTEM=blockconsumer
+      - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
+      - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
+      - KAFKA_BROKERS=kafka:9092
+    depends_on:
+      - postgres
+      - zookeeper
+      - kafka
+      - prometheus
+      - grafana
+      - pushgateway
+    restart: unless-stopped
+    command: make start-blockconsumer
 
   postgres:
     container_name: postgres
@@ -77,7 +78,7 @@ services:
       - "2181"
     ports:
       - "2181:2181"
-  
+
   kafka:
     image: wurstmeister/kafka
     env_file:
