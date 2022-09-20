@@ -51,6 +51,10 @@ func NewWorker(db *postgres.Database, kafka *kafka.Reader,
 }
 
 func (w *Worker) run(ctx context.Context) error {
+	chain := w.API.Coin().Handle
+
+	w.prometheus.SetBlocksConsumerMetrics(w.kafka, chain)
+
 	message, err := w.kafka.FetchMessage(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to fetch kafka message: %w", err)
@@ -62,7 +66,7 @@ func (w *Worker) run(ctx context.Context) error {
 	}
 
 	// txs.CleanMemos()
-	normalizedTxs, err := models.NormalizeTransactions(txs, w.API.Coin().Handle)
+	normalizedTxs, err := models.NormalizeTransactions(txs, chain)
 	if err != nil {
 		return fmt.Errorf("failed to normalized txs: %w", err)
 	}
@@ -75,6 +79,8 @@ func (w *Worker) run(ctx context.Context) error {
 		return fmt.Errorf("failed to commit kafka message (topic=%s offset=%d partition=%d): %w",
 			message.Topic, message.Offset, message.Partition, err)
 	}
+
+	w.prometheus.SetBlocksConsumerTopicPartitionOffset(chain, message.Topic, message.Partition, message.Offset)
 
 	log.WithFields(log.Fields{
 		"chain":     w.API.Coin().Handle,

@@ -1,7 +1,6 @@
 package prometheus
 
 import (
-	"context"
 	"strconv"
 	"time"
 
@@ -35,22 +34,13 @@ func (p *Prometheus) SetBlocksConsumerTopicPartitionOffset(chain, topic string, 
 	}).Set(float64(offset))
 }
 
-func (p *Prometheus) SetBlocksConsumerMetrics(ctx context.Context, kafkaReader *kafka.Reader, chain string) {
-	go func(ctx context.Context, kafkaReader *kafka.Reader, chain string) {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				stats := kafkaReader.Stats()
+func (p *Prometheus) SetBlocksConsumerMetrics(kafka *kafka.Reader, chain string) {
+	stats := kafka.Stats()
 
-				p.topicLag.With(prometheus.Labels{
-					labelChain: chain,
-					labelTopic: stats.Topic,
-				}).Set(float64(stats.Lag))
+	p.topicLag.With(prometheus.Labels{
+		labelChain: chain,
+		labelTopic: stats.Topic,
+	}).Set(float64(stats.Lag))
 
-				time.Sleep(10 * time.Second)
-			}
-		}
-	}(ctx, kafkaReader, chain)
+	time.Sleep(10 * time.Second)
 }
