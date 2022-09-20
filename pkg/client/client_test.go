@@ -2,16 +2,10 @@ package client
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"testing"
-	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestRequest_GetBase(t *testing.T) {
@@ -106,54 +100,6 @@ func TestRequest_GetURL(t *testing.T) {
 			if got := r.GetURL(tt.path, tt.query); got != tt.want {
 				t.Errorf("Request.GetURL() = %v, want %v", got, tt.want)
 			}
-		})
-	}
-}
-
-func TestTimeoutOption(t *testing.T) {
-	tests := []struct {
-		name             string
-		serverTimeout    time.Duration
-		serverResponse   string
-		clientTimeout    time.Duration
-		expectedResponse string
-		errExpected      assert.ErrorAssertionFunc
-	}{
-		{
-			name:           "client exits with timeout err",
-			serverTimeout:  time.Millisecond * 6,
-			serverResponse: "ok",
-			clientTimeout:  time.Millisecond * 2,
-			errExpected:    assert.Error,
-		},
-		{
-			name:             "response returned in time",
-			serverTimeout:    time.Millisecond * 2,
-			serverResponse:   "{\"status\":\"ok\"}",
-			clientTimeout:    time.Millisecond * 6,
-			expectedResponse: "{\"status\":\"ok\"}",
-			errExpected:      assert.NoError,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			serverTimeout := tc.serverTimeout
-			serverResponse := tc.serverResponse
-
-			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				time.Sleep(serverTimeout)
-
-				_, err := fmt.Fprintf(w, serverResponse)
-				assert.NoError(t, err)
-			}))
-
-			client := InitClient(srv.URL, nil, TimeoutOption(tc.clientTimeout))
-
-			var actual json.RawMessage
-			err := client.Get(&actual, "", nil)
-			tc.errExpected(t, err)
-			assert.Equal(t, tc.expectedResponse, string(actual))
 		})
 	}
 }

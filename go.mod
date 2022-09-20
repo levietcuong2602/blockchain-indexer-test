@@ -42,6 +42,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.15.7 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/lib/pq v1.10.2 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -74,6 +75,7 @@ require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/jinzhu/gorm v1.9.16
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect

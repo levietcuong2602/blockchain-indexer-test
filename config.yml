@@ -45,4 +45,4 @@ block_consumer:
 
 platforms:
   smartchain:
-    node: https://bsc-dataseed2.binance.org
+    node: https://bsc-dataseed1.binance.org

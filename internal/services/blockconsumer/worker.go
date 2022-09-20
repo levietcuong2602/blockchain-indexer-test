@@ -9,6 +9,7 @@ import (
 
 	"github.com/unanoc/blockchain-indexer/internal/config"
 	"github.com/unanoc/blockchain-indexer/internal/prometheus"
+	"github.com/unanoc/blockchain-indexer/internal/repository/models"
 	"github.com/unanoc/blockchain-indexer/internal/repository/postgres"
 	"github.com/unanoc/blockchain-indexer/pkg/worker"
 	"github.com/unanoc/blockchain-indexer/platform"
@@ -61,8 +62,14 @@ func (w *Worker) run(ctx context.Context) error {
 	}
 
 	// txs.CleanMemos()
+	normalizedTxs, err := models.NormalizeTransactions(txs, w.API.Coin().Handle)
+	if err != nil {
+		return fmt.Errorf("failed to normalized txs: %w", err)
+	}
 
-	// Send to queue or save in database HERE
+	if err = w.db.InsertTransactions(ctx, normalizedTxs); err != nil {
+		return fmt.Errorf("failed to insert txs: %w", err)
+	}
 
 	if err = w.kafka.CommitMessages(ctx, message); err != nil {
 		return fmt.Errorf("failed to commit kafka message (topic=%s offset=%d partition=%d): %w",
