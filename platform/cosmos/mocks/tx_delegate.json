@@ -1,0 +1,131 @@
+{
+  "tx_responses": [
+    {
+      "height": "8250271",
+      "txhash": "35A3424B1BA71032C3F7F05295B43ADEDCB41017B8EE3AAC31C6ADAB826B53C1",
+      "codespace": "",
+      "code": 0,
+      "data": "0A0A0A0864656C6567617465",
+      "raw_log": "[{\"events\":[{\"type\":\"delegate\",\"attributes\":[{\"key\":\"validator\",\"value\":\"cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3\"},{\"key\":\"amount\",\"value\":\"157183\"}]},{\"type\":\"message\",\"attributes\":[{\"key\":\"action\",\"value\":\"delegate\"},{\"key\":\"sender\",\"value\":\"cosmos1jv65s3grqf6v6jl3dp4t6c9t9rk99cd88lyufl\"},{\"key\":\"module\",\"value\":\"staking\"},{\"key\":\"sender\",\"value\":\"cosmos1qkkj3w29me2scc27ecu9pne8qdc7zn8um79nug\"}]},{\"type\":\"transfer\",\"attributes\":[{\"key\":\"recipient\",\"value\":\"cosmos1qkkj3w29me2scc27ecu9pne8qdc7zn8um79nug\"},{\"key\":\"sender\",\"value\":\"cosmos1jv65s3grqf6v6jl3dp4t6c9t9rk99cd88lyufl\"},{\"key\":\"amount\",\"value\":\"3982uatom\"}]}]}]",
+      "logs": [
+        {
+          "msg_index": 0,
+          "log": "",
+          "events": [
+            {
+              "type": "delegate",
+              "attributes": [
+                {
+                  "key": "validator",
+                  "value": "cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3"
+                },
+                {
+                  "key": "amount",
+                  "value": "157183"
+                }
+              ]
+            },
+            {
+              "type": "message",
+              "attributes": [
+                {
+                  "key": "action",
+                  "value": "delegate"
+                },
+                {
+                  "key": "sender",
+                  "value": "cosmos1jv65s3grqf6v6jl3dp4t6c9t9rk99cd88lyufl"
+                },
+                {
+                  "key": "module",
+                  "value": "staking"
+                },
+                {
+                  "key": "sender",
+                  "value": "cosmos1qkkj3w29me2scc27ecu9pne8qdc7zn8um79nug"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "cosmos1qkkj3w29me2scc27ecu9pne8qdc7zn8um79nug"
+                },
+                {
+                  "key": "sender",
+                  "value": "cosmos1jv65s3grqf6v6jl3dp4t6c9t9rk99cd88lyufl"
+                },
+                {
+                  "key": "amount",
+                  "value": "3982uatom"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "info": "",
+      "gas_wanted": "203000",
+      "gas_used": "146437",
+      "tx": {
+        "@type": "/cosmos.tx.v1beta1.Tx",
+        "body": {
+          "messages": [
+            {
+              "@type": "/cosmos.staking.v1beta1.MsgDelegate",
+              "delegator_address": "cosmos1qkkj3w29me2scc27ecu9pne8qdc7zn8um79nug",
+              "validator_address": "cosmosvaloper1tflk30mq5vgqjdly92kkhhq3raev2hnz6eete3",
+              "amount": {
+                "denom": "uatom",
+                "amount": "157183"
+              }
+            }
+          ],
+          "memo": "Delegated with Exodus",
+          "timeout_height": "0",
+          "extension_options": [
+          ],
+          "non_critical_extension_options": [
+          ]
+        },
+        "auth_info": {
+          "signer_infos": [
+            {
+              "public_key": {
+                "@type": "/cosmos.crypto.secp256k1.PubKey",
+                "key": "A9xskK1w59hGWhcd3YZxmRNW91dANRMBIbyh4+op85s6"
+              },
+              "mode_info": {
+                "single": {
+                  "mode": "SIGN_MODE_LEGACY_AMINO_JSON"
+                }
+              },
+              "sequence": "0"
+            }
+          ],
+          "fee": {
+            "amount": [
+              {
+                "denom": "uatom",
+                "amount": "5075"
+              }
+            ],
+            "gas_limit": "203000",
+            "payer": "",
+            "granter": ""
+          }
+        },
+        "signatures": [
+          "+r4xYp3j+DpGQeAzd8vLMFeUik4B4PNyze/UNz7Vs6FQDtarOvoZHygxC6vL9yUD4t1tcYsx+r+CpZXQOGfItA=="
+        ]
+      },
+      "timestamp": "2021-11-05T08:43:49Z"
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "3"
+  }
+}

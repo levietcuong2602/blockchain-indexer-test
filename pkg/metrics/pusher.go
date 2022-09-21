@@ -9,6 +9,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/unanoc/blockchain-indexer/pkg/client"
 	"github.com/unanoc/blockchain-indexer/pkg/worker"
@@ -110,7 +111,7 @@ func InitDefaultMetricsPusher(pushgatewayURL, pushgatewayKey, serviceName string
 }
 
 func NewMetricsPusherWorker(options *worker.Options, pusher Pusher) worker.Worker {
-	return worker.NewWorkerBuilder("metrics_pusher", pusher.Push).
+	return worker.NewWorkerBuilder("metrics_pusher", log.WithField("worker", "metrics_pusher"), pusher.Push).
 		WithOptions(options).
 		WithStop(pusher.Close).
 		Build()

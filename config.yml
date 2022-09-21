@@ -50,3 +50,7 @@ nodes:
 platforms:
   smartchain:
     node: https://bsc-dataseed1.binance.org
+  ethereum:
+    node: https://ethereum-mainnet-rpc.allthatnode.com
+  cosmos:
+    node: https://us-atom-restapi.binancechain.io

@@ -1,4 +1,4 @@
-package ethereum
+package cosmos
 
 import (
 	"github.com/unanoc/blockchain-indexer/pkg/client"
@@ -9,12 +9,14 @@ import (
 type Platform struct {
 	coin   uint
 	client Client
+	Denom  DenomType
 }
 
-func Init(coin uint, url string) *Platform {
+func Init(coin uint, denom DenomType, url string) *Platform {
 	return &Platform{
 		coin:   coin,
 		client: Client{client.InitJSONClient(url, sentry.DefaultSentryErrorHandler())},
+		Denom:  denom,
 	}
 }
 

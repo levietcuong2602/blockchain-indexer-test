@@ -13,8 +13,12 @@ const (
 	StatusSuccess Status = "success"
 	StatusError   Status = "error"
 
-	TxTransfer     TransactionType = "transfer"
-	TxContractCall TransactionType = "contract_call"
+	TxTransfer          TransactionType = "transfer"
+	TxContractCall      TransactionType = "contract_call"
+	TxStakeClaimRewards TransactionType = "stake_claim_rewards"
+	TxStakeDelegate     TransactionType = "stake_delegate"
+	TxStakeUndelegate   TransactionType = "stake_undelegate"
+	TxStakeRedelegate   TransactionType = "stake_redelegate"
 )
 
 type (
@@ -30,10 +34,11 @@ type (
 		From           string          `json:"from" bson:"from"`
 		To             string          `json:"to" bson:"to"`
 		BlockCreatedAt int64           `json:"block_created_at" bson:"block_created_at"`
-		Block          uint64          `json:"block_num" bson:"block_num"`
+		Block          uint64          `json:"block" bson:"block"`
 		Sequence       uint64          `json:"sequence" bson:"status"`
 		Status         Status          `json:"status" bson:"status"`
 		Type           TransactionType `json:"type" bson:"type"`
+		Memo           string          `json:"memo,omitempty"`
 		Fee            Fee             `json:"fee" bson:"type"`
 		Metadata       interface{}     `json:"metadata" bson:"metadata"`
 	}
@@ -47,13 +52,13 @@ type (
 // Tx metadata types
 type (
 	Transfer struct {
-		Asset coin.AssetID `json:"asset"`
-		Value Amount       `json:"value"`
+		Asset  coin.AssetID `json:"asset"`
+		Amount Amount       `json:"amount"`
 	}
 
 	ContractCall struct {
-		Asset coin.AssetID `json:"asset"`
-		Value Amount       `json:"value"`
-		Input string       `json:"input"`
+		Asset  coin.AssetID `json:"asset"`
+		Amount Amount       `json:"amount"`
+		Input  string       `json:"input"`
 	}
 )

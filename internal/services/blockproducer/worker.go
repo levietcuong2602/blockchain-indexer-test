@@ -52,7 +52,7 @@ func NewWorker(db *postgres.Database, k *kafka.Writer, p *prometheus.Prometheus,
 		RunConsequently: false,
 	}
 
-	return worker.NewWorkerBuilder(workerName, w.run).WithOptions(opts).Build()
+	return worker.NewWorkerBuilder(workerName, w.log, w.run).WithOptions(opts).Build()
 }
 
 func (w *Worker) run(ctx context.Context) error {

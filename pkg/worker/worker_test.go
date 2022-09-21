@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gotest.tools/assert"
 
 	"github.com/unanoc/blockchain-indexer/pkg/worker"
@@ -13,7 +14,8 @@ import (
 
 func TestWorkerWithDefaultOptions(t *testing.T) {
 	counter := 0
-	worker := worker.NewWorkerBuilder("test", func(context.Context) error {
+	logger := log.WithFields(log.Fields{"worker": "test_worker"})
+	worker := worker.NewWorkerBuilder("test", logger, func(context.Context) error {
 		counter++
 		return nil
 	}).WithOptions(worker.DefaultOptions(100 * time.Millisecond)).Build()
@@ -32,10 +34,11 @@ func TestWorkerWithDefaultOptions(t *testing.T) {
 
 func TestWorkerStartsConsequently(t *testing.T) {
 	counter := 0
+	logger := log.WithFields(log.Fields{"worker": "test_worker"})
 	options := worker.DefaultOptions(100 * time.Millisecond)
 	options.RunConsequently = true
 
-	worker := worker.NewWorkerBuilder("test", func(context.Context) error {
+	worker := worker.NewWorkerBuilder("test", logger, func(context.Context) error {
 		time.Sleep(100 * time.Millisecond)
 		counter++
 		return nil

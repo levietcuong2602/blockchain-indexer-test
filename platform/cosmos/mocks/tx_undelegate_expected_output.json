@@ -1,0 +1,20 @@
+[
+  {
+    "hash": "F686AB4F7F09D56419B4069A0FEC6DD4120628E9760F0E326ABB1785F9105FED",
+    "from": "cosmos1lvlzn63dmftm99sj60g2u4fwqjzgeh69r80egj",
+    "to": "cosmosvaloper1ey69r37gfxvxg62sh4r0ktpuc46pzjrm873ae8",
+    "block_created_at": 1636103819,
+    "block": 8250531,
+    "status": "success",
+    "sequence": 19,
+    "type": "stake_undelegate",
+    "fee": {
+      "asset": "c118",
+      "amount": "500"
+    },
+    "metadata": {
+      "asset": "c118",
+      "amount": "9798320"
+    }
+  }
+]

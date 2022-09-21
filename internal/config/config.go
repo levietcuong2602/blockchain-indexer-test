@@ -69,6 +69,12 @@ type Config struct {
 	Platforms struct {
 		Smartchain struct {
 			Node string `mapstructure:"node"`
-		}
+		} `mapstructure:"smartchain"`
+		Ethereum struct {
+			Node string `mapstructure:"node"`
+		} `mapstructure:"ethereum"`
+		Cosmos struct {
+			Node string `mapstructure:"node"`
+		} `mapstructure:"cosmos"`
 	} `mapstructure:"platforms"`
 }

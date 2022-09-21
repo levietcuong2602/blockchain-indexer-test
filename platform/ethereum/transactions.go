@@ -139,8 +139,8 @@ func (p *Platform) NormalizeCoinTransfer(srcTx Transaction,
 		return nil
 	}
 	tx.Metadata = &types.Transfer{
-		Asset: p.Coin().AssetID(),
-		Value: types.Amount((*big.Int)(srcTx.Value).String()),
+		Asset:  p.Coin().AssetID(),
+		Amount: types.Amount((*big.Int)(srcTx.Value).String()),
 	}
 
 	return tx
@@ -188,8 +188,8 @@ func (p *Platform) NormalizeTokenTransfer(srcTx Transaction, receipt Transaction
 	tx.To = addressTo
 	tx.Type = types.TxTransfer
 	tx.Metadata = &types.Transfer{
-		Asset: p.Coin().TokenAssetID(token), // Token contract
-		Value: types.Amount(value.String()),
+		Asset:  p.Coin().TokenAssetID(token), // Token contract
+		Amount: types.Amount(value.String()),
 	}
 
 	return tx
@@ -211,9 +211,9 @@ func (p *Platform) NormalizeContractCall(srcTx Transaction,
 		return nil
 	}
 	tx.Metadata = &types.ContractCall{
-		Asset: p.Coin().AssetID(),
-		Value: types.Amount((*big.Int)(srcTx.Value).String()),
-		Input: srcTx.Input,
+		Asset:  p.Coin().AssetID(),
+		Amount: types.Amount((*big.Int)(srcTx.Value).String()),
+		Input:  srcTx.Input,
 	}
 
 	return tx

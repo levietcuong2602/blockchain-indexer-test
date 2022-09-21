@@ -40,6 +40,45 @@ var nodesList = map[string][]models.Node{
 			Monitoring: true,
 		},
 	},
+	"ethereum": {
+		{
+			Chain:      "ethereum",
+			Scheme:     "https",
+			Host:       "ethereum-mainnet-rpc.allthatnode.com",
+			Enabled:    true,
+			Monitoring: true,
+		},
+		{
+			Chain:      "ethereum",
+			Scheme:     "https",
+			Host:       "ethereum-rinkeby-rpc.allthatnode.com",
+			Enabled:    true,
+			Monitoring: true,
+		},
+		{
+			Chain:      "ethereum",
+			Scheme:     "https",
+			Host:       "ethereum-ropsten-rpc.allthatnode.comm",
+			Enabled:    true,
+			Monitoring: true,
+		},
+	},
+	"cosmos": {
+		{
+			Chain:      "cosmos",
+			Scheme:     "https",
+			Host:       "us-atom-restapi.binancechain.io",
+			Enabled:    true,
+			Monitoring: true,
+		},
+		{
+			Chain:      "cosmos",
+			Scheme:     "https",
+			Host:       "cosmos-mainnet-rpc.allthatnode.com:1317",
+			Enabled:    true,
+			Monitoring: true,
+		},
+	},
 }
 
 func AddNodesListToDB(db *postgres.Database) error {

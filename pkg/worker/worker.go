@@ -18,12 +18,13 @@ type builder struct {
 	worker *worker
 }
 
-func NewWorkerBuilder(name string, workerFn func(context.Context) error) Builder {
+func NewWorkerBuilder(name string, logger *log.Entry, workerFn func(context.Context) error) Builder {
 	return &builder{
 		worker: &worker{
 			name:     name,
 			workerFn: workerFn,
 			options:  DefaultOptions(1 * time.Minute),
+			logger:   logger,
 		},
 	}
 }
@@ -56,6 +57,7 @@ type worker struct {
 	workerFn func(context.Context) error
 	stopFn   func() error
 	options  *Options
+	logger   *log.Entry
 }
 
 func (w *worker) Name() string {
@@ -72,10 +74,10 @@ func (w *worker) Start(ctx context.Context, wg *sync.WaitGroup) {
 		defer ticker.Stop()
 
 		if w.options.RunImmediately {
-			log.WithField("worker", w.name).Info("Run immediately")
+			w.logger.WithField("worker", w.name).Info("Run immediately")
 
 			if err := w.workerFn(ctx); err != nil {
-				log.WithError(err).WithField("worker", w.name).Error("Error occurred while running the worker")
+				w.logger.WithError(err).WithField("worker", w.name).Error("Error occurred while running the worker")
 			}
 		}
 
@@ -83,12 +85,12 @@ func (w *worker) Start(ctx context.Context, wg *sync.WaitGroup) {
 			select {
 			case <-ctx.Done():
 				if w.stopFn != nil {
-					log.WithField("worker", w.name).Info("Stopping...")
+					w.logger.WithField("worker", w.name).Info("Stopping...")
 					if err := w.stopFn(); err != nil {
-						log.WithField("worker", w.name).WithError(err).Warn("Error occurred while stopping the worker")
+						w.logger.WithField("worker", w.name).WithError(err).Warn("Error occurred while stopping the worker")
 					}
 				}
-				log.WithField("worker", w.name).Info("Stopped")
+				w.logger.WithField("worker", w.name).Info("Stopped")
 
 				return
 			case <-ticker.C:
@@ -96,10 +98,10 @@ func (w *worker) Start(ctx context.Context, wg *sync.WaitGroup) {
 					ticker.Stop()
 				}
 
-				log.WithField("worker", w.name).Info("Processing")
+				w.logger.WithField("worker", w.name).Info("Processing")
 
 				if err := w.workerFn(ctx); err != nil {
-					log.WithError(err).WithField("worker", w.name).Error("Error occurred while running the worker")
+					w.logger.WithError(err).WithField("worker", w.name).Error("Error occurred while running the worker")
 				}
 
 				if w.options.RunConsequently {

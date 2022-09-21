@@ -47,7 +47,7 @@ func NewWorker(db *postgres.Database, kafka *kafka.Reader,
 		RunConsequently: false,
 	}
 
-	return worker.NewWorkerBuilder(workerName, w.run).WithOptions(opts).Build()
+	return worker.NewWorkerBuilder(workerName, w.log, w.run).WithOptions(opts).Build()
 }
 
 func (w *Worker) run(ctx context.Context) error {
