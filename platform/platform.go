@@ -12,6 +12,7 @@ type (
 		Coin() coin.Coin
 		GetCurrentBlockNumber() (int64, error)
 		GetBlockByNumber(num int64) ([]byte, error)
+		GetVersion() (string, error)
 		NormalizeRawBlock(rawBlock []byte) (types.Txs, error)
 	}
 
@@ -21,5 +22,15 @@ type (
 func InitPlatforms() Platforms {
 	return Platforms{
 		coin.Smartchain().Handle: ethereum.InitPlatform(coin.SMARTCHAIN, config.Default.Platforms.Smartchain.Node),
+	}
+}
+
+//nolint:gofumpt
+func GetPlatform(chain string, url string) Platform {
+	switch chain {
+	case coin.Smartchain().Handle:
+		return ethereum.InitPlatform(coin.SMARTCHAIN, url)
+	default:
+		return nil
 	}
 }

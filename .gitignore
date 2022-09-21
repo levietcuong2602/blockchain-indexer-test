@@ -17,5 +17,4 @@
 # Common
 /bin
 .vscode/
-db/
 coverage.txt

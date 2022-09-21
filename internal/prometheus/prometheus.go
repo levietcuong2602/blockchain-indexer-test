@@ -13,7 +13,6 @@ const (
 	labelVersion   = "version"
 	labelTopic     = "topic"
 	labelPartition = "partition"
-	labelOffset    = "offset"
 )
 
 // Prometheus is a struct for prometheus metrics.
@@ -34,6 +33,11 @@ type Prometheus struct {
 	// Blockconsumer metrics
 	topicPartitionOffset *prometheus.GaugeVec
 	topicLag             *prometheus.GaugeVec
+
+	// Nodes metrics
+	nodeCurrentBlock *prometheus.GaugeVec
+	nodeLatency      *prometheus.GaugeVec
+	nodeStatus       *prometheus.GaugeVec
 }
 
 // NewPrometheus return an instance of Prometheus with registered metrics.

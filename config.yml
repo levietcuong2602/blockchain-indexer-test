@@ -43,6 +43,10 @@ block_producer:
 block_consumer:
   interval: 1ms
 
+nodes:
+  interval: 1m
+  init_nodes: true
+
 platforms:
   smartchain:
     node: https://bsc-dataseed1.binance.org

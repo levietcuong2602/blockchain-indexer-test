@@ -60,6 +60,23 @@ services:
     restart: unless-stopped
     command: make start-blockconsumer
 
+  nodes:
+    container_name: nodes
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile_nodes
+    environment:
+      - PROMETHEUS_SUBSYSTEM=nodes
+      - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
+      - DATABASE_URL=postgresql://user:password@postgres:5432/postgres?sslmode=disable
+    depends_on:
+      - postgres
+      - prometheus
+      - grafana
+      - pushgateway
+    restart: unless-stopped
+    command: make start-nodes
+
   postgres:
     container_name: postgres
     image: postgres:11

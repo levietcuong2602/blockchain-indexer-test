@@ -14,6 +14,7 @@ const (
 	MethodBlockNumber        = "eth_blockNumber"
 	MethodBlockByNumber      = "eth_getBlockByNumber"
 	MethodTransactionReceipt = "eth_getTransactionReceipt"
+	MethodClientVersion      = "web3_clientVersion"
 
 	rpcBatchSize = 45
 )
@@ -89,4 +90,13 @@ func (c *Client) hashToRPCRequestMapper(method string) func(interface{}) client.
 			Params: array,
 		}
 	}
+}
+
+func (c *Client) GetVersion() (string, error) {
+	var resp string
+	if err := c.RPCCall(&resp, MethodClientVersion, nil); err != nil {
+		return "", err
+	}
+
+	return resp, nil
 }

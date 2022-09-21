@@ -40,6 +40,7 @@ func Setup(db *Database) error {
 	if err := conn.AutoMigrate(
 		&models.BlockTracker{},
 		&models.Transaction{},
+		&models.Node{},
 	); err != nil {
 		return fmt.Errorf("failed to make auto migrations: %w", err)
 	}

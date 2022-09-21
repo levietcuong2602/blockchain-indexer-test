@@ -6,9 +6,9 @@
 - Add block consumer (kafka) ✅
 - Add metrics ✅
 - Add Postgres ✅
-- Add more chains
-- Add nodes monitoring
+- Add nodes monitoring ✅
 - Add nodes backup mechanism
+- Add more chains
 - Add API
 - Check if consumers are scalable
 - Update README.md

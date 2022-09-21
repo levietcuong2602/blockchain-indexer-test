@@ -61,6 +61,11 @@ type Config struct {
 		Interval time.Duration `mapstructure:"interval"`
 	} `mapstructure:"block_consumer"`
 
+	Nodes struct {
+		Interval  time.Duration `mapstructure:"interval"`
+		InitNodes bool          `mapstructure:"init_nodes"`
+	} `mapstructure:"nodes"`
+
 	Platforms struct {
 		Smartchain struct {
 			Node string `mapstructure:"node"`

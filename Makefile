@@ -70,6 +70,19 @@ go-build-blockconsumer:
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/blockconsumer ./cmd/blockconsumer
 
 # ---------------------------------------------------------
+# Nodes
+# ---------------------------------------------------------
+nodes: go-build-nodes start-nodes
+
+start-nodes:
+	@echo "  >  Starting nodes"
+	PROMETHEUS_SUBSYSTEM=nodes $(GOBIN)/nodes
+
+go-build-nodes:
+	@echo "  >  Building nodes binary..."
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/nodes ./cmd/nodes
+
+# ---------------------------------------------------------
 # Code Checking
 # ---------------------------------------------------------
 check: fmt lint unit-test swag
