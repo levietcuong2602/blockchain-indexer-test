@@ -21,3 +21,7 @@ func InitPlatform(coin uint, url string) *Platform {
 func (p Platform) Coin() coin.Coin {
 	return coin.Coins[p.coin]
 }
+
+func (p *Platform) UpdateNodeConnection(url string) {
+	p.client = Client{client.InitClient(url, sentry.DefaultSentryErrorHandler())}
+}

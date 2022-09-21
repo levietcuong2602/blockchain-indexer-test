@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/unanoc/blockchain-indexer/internal/prometheus"
 	"github.com/unanoc/blockchain-indexer/internal/repository/models"
 	"github.com/unanoc/blockchain-indexer/internal/repository/postgres"
+	"github.com/unanoc/blockchain-indexer/pkg/http"
 	"github.com/unanoc/blockchain-indexer/pkg/worker"
 	"github.com/unanoc/blockchain-indexer/platform"
 )
@@ -24,20 +26,24 @@ const (
 )
 
 type Worker struct {
-	log        *log.Entry
-	db         *postgres.Database
-	kafka      *kafka.Writer
-	prometheus *prometheus.Prometheus
-	API        platform.Platform
+	log          *log.Entry
+	db           *postgres.Database
+	kafka        *kafka.Writer
+	prometheus   *prometheus.Prometheus
+	API          platform.Platform
+	nodes        []string
+	lastNodeUsed int
 }
 
 func NewWorker(db *postgres.Database, k *kafka.Writer, p *prometheus.Prometheus, pl platform.Platform) worker.Worker {
 	w := &Worker{
-		log:        log.WithFields(log.Fields{"worker": workerName, "chain": pl.Coin().Handle}),
-		db:         db,
-		kafka:      k,
-		prometheus: p,
-		API:        pl,
+		log:          log.WithFields(log.Fields{"worker": workerName, "chain": pl.Coin().Handle}),
+		db:           db,
+		kafka:        k,
+		prometheus:   p,
+		API:          pl,
+		nodes:        make([]string, 0),
+		lastNodeUsed: 0,
 	}
 
 	opts := &worker.Options{
@@ -50,6 +56,19 @@ func NewWorker(db *postgres.Database, k *kafka.Writer, p *prometheus.Prometheus,
 }
 
 func (w *Worker) run(ctx context.Context) error {
+	chain := w.API.Coin().Handle
+
+	nodes, err := w.db.GetNodesByChain(ctx, chain)
+	if err != nil {
+		log.WithError(err).WithField("chain", chain).Error("Getting nodes list error")
+
+		return nil
+	}
+
+	for _, node := range nodes {
+		w.nodes = append(w.nodes, http.BuildURL(node.Scheme, node.Host))
+	}
+
 	if err := w.fetch(ctx); err != nil {
 		time.Sleep(config.Default.BlockProducer.BackoffInterval)
 
@@ -120,6 +139,12 @@ func (w *Worker) getBlocksIntervalToFetch(tracker *models.BlockTracker) (int64, 
 
 	currentBlock, err := w.API.GetCurrentBlockNumber()
 	if err != nil {
+		if strings.Contains(err.Error(), "connection refused") {
+			if nextNode := w.getNextNode(); nextNode != "" {
+				w.API.UpdateNodeConnection(nextNode)
+			}
+		}
+
 		return 0, 0, fmt.Errorf("failed to get current block number: %w", err)
 	}
 
@@ -242,14 +267,22 @@ func (w *Worker) getBlockByNumberWithRetry(attempts int, sleep time.Duration, nu
 		}).Warn("Getting block by number error")
 
 		if attempts--; attempts > 0 {
+			newNode := w.getNextNode()
+
 			log.WithFields(log.Fields{
-				"chain":    chain,
-				"number":   num,
-				"attempts": attempts,
-				"sleep":    sleep.String(),
+				"chain":        chain,
+				"number":       num,
+				"attempts":     attempts,
+				"sleep":        sleep.String(),
+				"new_node_url": newNode,
 			}).Warn("GetBlockByNumber retry")
 
+			if newNode == "" {
+				return w.getBlockByNumberWithRetry(attempts, sleep, num)
+			}
+
 			time.Sleep(sleep)
+			w.API.UpdateNodeConnection(newNode)
 
 			return w.getBlockByNumberWithRetry(attempts, sleep, num)
 		}
@@ -282,4 +315,19 @@ func (w *Worker) writeBlockToKafka(ctx context.Context, block BlockData) error {
 	w.prometheus.SetKafkaMessageSizeBytes(chain, len(block.Data))
 
 	return nil
+}
+
+func (w *Worker) getNextNode() string {
+	if len(w.nodes) > 0 {
+		if w.lastNodeUsed+1 < len(w.nodes) {
+			w.lastNodeUsed++
+
+			return w.nodes[w.lastNodeUsed]
+		}
+		w.lastNodeUsed = 0
+
+		return w.nodes[0]
+	}
+
+	return ""
 }

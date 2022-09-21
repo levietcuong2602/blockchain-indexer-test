@@ -14,6 +14,7 @@ type (
 		GetBlockByNumber(num int64) ([]byte, error)
 		GetVersion() (string, error)
 		NormalizeRawBlock(rawBlock []byte) (types.Txs, error)
+		UpdateNodeConnection(url string)
 	}
 
 	Platforms map[string]Platform

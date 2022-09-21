@@ -7,7 +7,7 @@
 - Add metrics ✅
 - Add Postgres ✅
 - Add nodes monitoring ✅
-- Add nodes backup mechanism
+- Add nodes backup mechanism ✅
 - Add more chains
 - Add API
 - Check if consumers are scalable
