@@ -175,7 +175,6 @@ func (p *Platform) fillDelegate(tx *types.Tx, srcTx TxResponse, msg MessageValue
 		tx.Type = types.TxStakeUndelegate
 	case MsgWithdrawDelegatorReward:
 		tx.Type = types.TxStakeClaimRewards
-		fmt.Println("DANIEL", p.Denom)
 		amount = srcTx.Logs.GetWithdrawRewardValue(p.Denom)
 	}
 
