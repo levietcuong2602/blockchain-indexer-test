@@ -39,7 +39,7 @@ func NewApp() *App {
 	platforms := platform.InitPlatforms()
 
 	if err = initBlockTrackers(context.Background(), db, platforms); err != nil {
-		log.WithError(err).Warn("Block trackers init error")
+		log.WithError(err).Fatal("Block trackers init error")
 	}
 
 	kafka := kafka.NewWriter(kafka.WriterConfig{
@@ -99,15 +99,6 @@ func initBlockTrackers(ctx context.Context, db repository.Storage, platforms pla
 		if tracker != nil {
 			continue
 		}
-
-		// current, err := pl.GetCurrentBlockNumber()
-		// if err != nil {
-		// 	return err
-		// }
-
-		// if err = db.UpsertBlockTracker(ctx, pl.Coin().Handle, current); err != nil {
-		// 	return fmt.Errorf("failed to insert block tracker: %w", err)
-		// }
 
 		if err = db.UpsertBlockTracker(ctx, pl.Coin().Handle, 0); err != nil {
 			return fmt.Errorf("failed to insert block tracker: %w", err)

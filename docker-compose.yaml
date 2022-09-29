@@ -18,7 +18,7 @@ services:
       - prometheus
       - grafana
       - pushgateway
-    restart: unless-stopped
+    restart: always
     command: make start-api
 
   blockproducer:
@@ -39,7 +39,7 @@ services:
       - prometheus
       - grafana
       - pushgateway
-    restart: unless-stopped
+    restart: always
     command: make start-blockproducer
 
   blockconsumer:
@@ -58,7 +58,7 @@ services:
       - prometheus
       - grafana
       - pushgateway
-    restart: unless-stopped
+    restart: always
     command: make start-blockconsumer
 
   nodes:
@@ -75,7 +75,7 @@ services:
       - prometheus
       - grafana
       - pushgateway
-    restart: unless-stopped
+    restart: always
     command: make start-nodes
 
   transactionconsumer:
@@ -94,7 +94,7 @@ services:
       - prometheus
       - grafana
       - pushgateway
-    restart: unless-stopped
+    restart: always
     command: make start-transactionconsumer
 
   postgres:
@@ -111,7 +111,7 @@ services:
   rabbit:
     container_name: rabbit
     image: rabbitmq:management
-    restart: unless-stopped
+    restart: always
     ports:
       - 5672:5672
       - 15672:15672
@@ -119,7 +119,7 @@ services:
   zookeeper:
     container_name: zookeeper
     image: wurstmeister/zookeeper:3.4.6
-    restart: unless-stopped
+    restart: always
     expose:
       - "2181"
     ports:
@@ -128,7 +128,7 @@ services:
   kafka:
     container_name: kafka
     image: wurstmeister/kafka
-    restart: unless-stopped
+    restart: always
     env_file:
       - configs/kafka/variables.env
     depends_on:
@@ -141,7 +141,7 @@ services:
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
-    restart: unless-stopped
+    restart: always
     ports:
       - 9090:9090
     volumes:
@@ -150,7 +150,7 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
-    restart: unless-stopped
+    restart: always
     ports:
       - 3000:3000
     volumes:
@@ -160,6 +160,6 @@ services:
   pushgateway:
     container_name: pushgateway
     image: prom/pushgateway:latest
-    restart: unless-stopped
+    restart: always
     ports:
       - 9091:9091

@@ -18,5 +18,4 @@
 
 ## Problems
 
-- Block trackers are not working correctly (it doesn't set Current block num, only for ETHEREUM and the it resets it)
 - Cosmos txs are not parsed

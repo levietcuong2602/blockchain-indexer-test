@@ -124,6 +124,10 @@ func (w *Worker) fetch(ctx context.Context) error {
 		lastFetchedBlock = block.Num
 	}
 
+	if lastFetchedBlock == 0 {
+		return nil
+	}
+
 	if err = w.db.UpsertBlockTracker(ctx, chain, lastFetchedBlock); err != nil {
 		return fmt.Errorf("failed to update block tracker: %w", err)
 	}

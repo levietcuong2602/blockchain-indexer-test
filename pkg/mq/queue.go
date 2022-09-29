@@ -24,16 +24,18 @@ func (q *queue) Declare() error {
 }
 
 func (q *queue) DeclareWithConfig(cfg DeclareConfig) error {
-	_, err := q.client.amqpChan.QueueDeclare(
+	if _, err := q.client.amqpChan.QueueDeclare(
 		string(q.name),
 		cfg.Durable,
 		cfg.AutoDelete,
 		cfg.Exclusive,
 		cfg.NoWait,
 		cfg.Args,
-	)
+	); err != nil {
+		return fmt.Errorf("failed to declare a queue: %w", err)
+	}
 
-	return fmt.Errorf("failed to declare a queue: %w", err)
+	return nil
 }
 
 func (q *queue) Publish(body []byte) error {
