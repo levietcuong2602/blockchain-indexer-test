@@ -39,6 +39,7 @@ block_producer:
   interval: 10ms
   backoff_interval: 10s
   fetch_blocks_max: 10
+  start_from_last_block: true
 
   block_retry: 10
   block_retry_interval: 5s
@@ -54,9 +55,9 @@ transaction_consumer:
   workers: 2
 
 platforms:
-  smartchain:
-    node: https://bsc-dataseed1.binance.org
   ethereum:
     node: https://ethereum-mainnet-rpc.allthatnode.com
+  smartchain:
+    node: https://bsc-dataseed1.binance.org
   cosmos:
     node: https://us-atom-restapi.binancechain.io

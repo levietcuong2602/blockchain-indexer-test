@@ -57,6 +57,7 @@ type Config struct {
 		Interval           time.Duration `mapstructure:"interval"`
 		BackoffInterval    time.Duration `mapstructure:"backoff_interval"`
 		FetchBlocksMax     int64         `mapstructure:"fetch_blocks_max"`
+		StartFromLastBlock bool          `mapstructure:"start_from_last_block"`
 		BlockRetryNum      int           `mapstructure:"block_retry"`
 		BlockRetryInterval time.Duration `mapstructure:"block_retry_interval"`
 	} `mapstructure:"block_producer"`
@@ -75,12 +76,12 @@ type Config struct {
 	} `mapstructure:"transaction_consumer"`
 
 	Platforms struct {
-		Smartchain struct {
-			Node string `mapstructure:"node"`
-		} `mapstructure:"smartchain"`
 		Ethereum struct {
 			Node string `mapstructure:"node"`
 		} `mapstructure:"ethereum"`
+		Smartchain struct {
+			Node string `mapstructure:"node"`
+		} `mapstructure:"smartchain"`
 		Cosmos struct {
 			Node string `mapstructure:"node"`
 		} `mapstructure:"cosmos"`

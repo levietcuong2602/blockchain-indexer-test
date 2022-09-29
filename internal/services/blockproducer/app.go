@@ -100,7 +100,16 @@ func initBlockTrackers(ctx context.Context, db repository.Storage, platforms pla
 			continue
 		}
 
-		if err = db.UpsertBlockTracker(ctx, pl.Coin().Handle, 0); err != nil {
+		var currentBlock int64
+
+		if config.Default.BlockProducer.StartFromLastBlock {
+			currentBlock, err = pl.GetCurrentBlockNumber()
+			if err != nil {
+				return fmt.Errorf("failed to get current block number: %w", err)
+			}
+		}
+
+		if err = db.UpsertBlockTracker(ctx, pl.Coin().Handle, currentBlock); err != nil {
 			return fmt.Errorf("failed to insert block tracker: %w", err)
 		}
 	}

@@ -8,10 +8,10 @@
 - Add Postgres ✅
 - Add nodes monitoring ✅
 - Add nodes backup mechanism ✅
-- Add queues with Rabbit MQ for workers: ✅
-    -- Worker that saves txs in Postgres;
+- Add queues with RabbitMQ for workers: Worker that saves txs in Postgres ✅
 - Add more chains
 - Add API
 - Check if consumers are scalable
+- Fix "depends on" in docker-compose
 - Draw a diagram of the architecture
 - Update README.md
