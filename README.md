@@ -15,7 +15,3 @@
 - Check if consumers are scalable
 - Draw a diagram of the architecture
 - Update README.md
-
-## Problems
-
-- Cosmos txs are not parsed

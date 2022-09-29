@@ -182,22 +182,21 @@ func (m *Message) UnmarshalJSON(buf []byte) error {
 	messageType := struct {
 		Type TxType `json:"@type"`
 	}{}
-	err := json.Unmarshal(buf, &messageType)
-	if err != nil {
+	if err := json.Unmarshal(buf, &messageType); err != nil {
 		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
 
 	switch messageType.Type {
 	case MsgSend:
 		var msgSend MessageValueSend
-		if err = json.Unmarshal(buf, &msgSend); err != nil {
+		if err := json.Unmarshal(buf, &msgSend); err != nil {
 			return fmt.Errorf("failed to unmarshal json to MessageValueSend type: %w", err)
 		}
 
 		m.MessageValue = msgSend
 	case MsgDelegate, MsgUndelegate, MsgWithdrawDelegatorReward:
 		var msgDelegate MessageValueDelegate
-		if err = json.Unmarshal(buf, &msgDelegate); err != nil {
+		if err := json.Unmarshal(buf, &msgDelegate); err != nil {
 			return fmt.Errorf("failed to unmarshal json to MessageValueDelegate type: %w", err)
 		}
 
@@ -205,6 +204,36 @@ func (m *Message) UnmarshalJSON(buf []byte) error {
 	}
 
 	return nil
+}
+
+// MarshalJSON reads different message types
+func (m *Message) MarshalJSON() (data []byte, err error) {
+	msgSend, ok := m.MessageValue.(MessageValueSend)
+	if ok {
+		data, err = json.Marshal(msgSend)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal json: %w", err)
+		}
+
+		return data, nil
+	}
+
+	msgDelegate, ok := m.MessageValue.(MessageValueDelegate)
+	if ok {
+		data, err = json.Marshal(msgDelegate)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal json: %w", err)
+		}
+
+		return data, nil
+	}
+
+	data, err = json.Marshal(m.MessageValue)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal json: %w", err)
+	}
+
+	return data, nil
 }
 
 type (
