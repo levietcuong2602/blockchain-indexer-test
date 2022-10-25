@@ -32,11 +32,9 @@ type (
 		Amount      *uint64     `json:"amount"`
 		TxAsset     string      `json:"asset"`
 		TxFee       uint64      `json:"fee"`
-		OrderID     string      `json:"orderId,omitempty"`
 		Code        int         `json:"code"`
 		Data        string      `json:"data"`
 		Memo        string      `json:"memo"`
-		Source      int         `json:"source"`
 		Sequence    int         `json:"sequence"`
 	}
 

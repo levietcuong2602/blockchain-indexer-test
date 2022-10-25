@@ -77,12 +77,15 @@ func (w *Worker) run(ctx context.Context) error {
 
 	w.prometheus.SetBlocksConsumerTopicPartitionOffset(chain, message.Topic, message.Partition, message.Offset)
 
-	log.WithFields(log.Fields{
-		"chain":     w.API.Coin().Handle,
-		"txs":       len(txs),
-		"partition": message.Partition,
-		"offset":    message.Offset,
-	}).Info("Transactions have been consumed")
+	if len(txs) > 0 {
+		log.WithFields(log.Fields{
+			"chain":     w.API.Coin().Handle,
+			"txs":       len(txs),
+			"block":     int(txs[0].Block),
+			"partition": message.Partition,
+			"offset":    message.Offset,
+		}).Info("Transactions have been consumed")
+	}
 
 	return nil
 }

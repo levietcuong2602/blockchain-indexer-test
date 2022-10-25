@@ -10,7 +10,7 @@
 - Add nodes backup mechanism ✅
 - Add queues with RabbitMQ for workers: Worker that saves txs in Postgres ✅
 - Add API ✅
-- Add more chains
+- Add more chains (fix Binance, add Solana or Near:check if there are public nodes)
 - Check if consumers are scalable
 - Fix "depends on" in docker-compose
 - Draw a diagram of the architecture
