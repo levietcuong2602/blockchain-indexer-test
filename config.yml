@@ -25,6 +25,8 @@ kafka:
   max_attempts: 5
   message_max_bytes: 15728640 # Message max bytes to produce # 15MB
   retention_time: 720h # Time to store cosumer group in broker (if all consumers are inactive)
+  partitions: 2
+  replication_factor: 1
 
 prometheus:
   namespace: blockchain_indexer

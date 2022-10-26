@@ -45,5 +45,5 @@ docker-compose up
 - Add API ✅
 - Draw a diagram of the architecture ✅
 - Update README.md ✅
-- Check if consumers are scalable
+- Check if consumers are scalable ✅
 - Add more chains (fix Binance, add Solana, Bitcoin and Near-check if there are public nodes)

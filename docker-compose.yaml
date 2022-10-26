@@ -61,6 +61,25 @@ services:
     restart: always
     command: make start-blockconsumer
 
+  blockconsumer_2:
+    container_name: blockconsumer_2
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile_blockconsumer
+    environment:
+      - PROMETHEUS_SUBSYSTEM=blockconsumer
+      - PROMETHEUS_PUSHGATEWAY_URL=pushgateway:9091
+      - RABBITMQ_URL=amqp://rabbit:5672
+      - KAFKA_BROKERS=kafka:9092
+    depends_on:
+      - postgres
+      - rabbit
+      - prometheus
+      - grafana
+      - pushgateway
+    restart: always
+    command: make start-blockconsumer
+
   nodes:
     container_name: nodes
     build:

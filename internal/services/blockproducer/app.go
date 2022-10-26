@@ -3,6 +3,8 @@ package blockproducer
 import (
 	"context"
 	"fmt"
+	"net"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -42,6 +44,8 @@ func NewApp() *App {
 		log.WithError(err).Fatal("Block trackers init error")
 	}
 
+	creatKafkaTopics(platforms)
+
 	kafka := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:      strings.Split(config.Default.Kafka.Brokers, ","),
 		MaxAttempts:  config.Default.Kafka.MaxAttempts,
@@ -49,7 +53,7 @@ func NewApp() *App {
 		RequiredAcks: -1,
 		Logger:       log.New(),
 	})
-	kafka.AllowAutoTopicCreation = true
+	// kafka.AllowAutoTopicCreation = true
 
 	prometheus := prometheus.NewPrometheus(config.Default.Prometheus.NameSpace, config.Default.Prometheus.SubSystem)
 	prometheus.RegisterBlocksProducerMetrics()
@@ -115,4 +119,39 @@ func initBlockTrackers(ctx context.Context, db repository.Storage, platforms pla
 	}
 
 	return nil
+}
+
+func creatKafkaTopics(platforms platform.Platforms) {
+	conn, err := kafka.Dial("tcp", strings.Split(config.Default.Kafka.Brokers, ",")[0])
+	if err != nil {
+		log.WithError(err).Fatal("Kafka dial error")
+	}
+	defer conn.Close()
+
+	controller, err := conn.Controller()
+	if err != nil {
+		log.WithError(err).Fatal("Kafka Controller init error")
+	}
+
+	var controllerConn *kafka.Conn
+	controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	if err != nil {
+		log.WithError(err).Fatal("Kafka dial error")
+	}
+	defer controllerConn.Close()
+
+	topicConfigs := make([]kafka.TopicConfig, 0, len(platforms))
+	for _, pl := range platforms {
+		topic := fmt.Sprintf("%s%s", config.Default.Kafka.BlocksTopicPrefix, pl.Coin().Handle)
+
+		topicConfigs = append(topicConfigs, kafka.TopicConfig{
+			Topic:             topic,
+			NumPartitions:     config.Default.Kafka.Partitions,
+			ReplicationFactor: config.Default.Kafka.ReplicationFactor,
+		})
+	}
+
+	if err = controllerConn.CreateTopics(topicConfigs...); err != nil {
+		log.WithError(err).Fatal("Topic creation error")
+	}
 }

@@ -40,6 +40,8 @@ type Config struct {
 		MaxAttempts       int           `mapstructure:"max_attempts"`
 		MessageMaxBytes   int           `mapstructure:"message_max_bytes"`
 		RetentionTime     time.Duration `mapstructure:"retention_time"`
+		Partitions        int           `mapstructure:"partitions"`
+		ReplicationFactor int           `mapstructure:"replication_factor"`
 	} `mapstructure:"kafka"`
 
 	Prometheus struct {
