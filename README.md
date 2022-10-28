@@ -2,7 +2,7 @@
 
 ## Overview
 
-Blockchain Indexer provides fast transaction indexing that can be used in explorers, crypto wallets, etc. It supports transaction parsing of the most popular blockchains: Bitcoin, Ethereum, Smartchain, Cosmos, Solana, Binance, and Near.
+Blockchain Indexer provides fast transaction indexing that can be used in explorers, crypto wallets, etc. It supports transaction parsing of the most popular blockchains: Ethereum, Smartchain, Cosmos, Binance, and Near.
 
 ## Architecture
 
@@ -32,16 +32,3 @@ docker-compose up
 - [Prometheus](http://localhost:9090)
 - [Push Gateway](http://localhost:9091)
 - [Rabbit MQ](http://localhost:15672)
-
-## TODO
-
-- Add block producer (kafka) ✅
-- Add block consumer (kafka) ✅
-- Add metrics ✅
-- Add Postgres ✅
-- Add nodes monitoring ✅
-- Add nodes backup mechanism ✅
-- Add queues with RabbitMQ for workers: Worker that saves txs in Postgres ✅
-- Add API ✅
-- Check if consumers are scalable ✅
-- Add more chains (fix Binance, add Solana, Bitcoin)
