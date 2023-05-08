@@ -61,7 +61,7 @@ platforms:
     node: https://api.binance.org/bc
     dex: https://dex.binance.org
   cosmos:
-    node: https://us-atom-restapi.binancechain.io
+    node: https://node.atomscan.com/
   ethereum:
     node: https://ethereum-mainnet-rpc.allthatnode.com
   smartchain:
