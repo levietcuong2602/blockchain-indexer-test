@@ -54,3 +54,11 @@
   decimals: 24
   blockTime: 2000
   blockchain: Near
+
+- id: 80001
+  symbol: MATIC
+  handle: mumbai
+  name: MUMBAI
+  decimals: 24
+  blockTime: 3000
+  blockchain: Mumbai

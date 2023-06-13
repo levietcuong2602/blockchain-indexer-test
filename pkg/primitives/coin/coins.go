@@ -52,6 +52,7 @@ const (
 	SOLANA = 501
 	SMARTCHAIN = 20000714
 	NEAR = 397
+	MUMBAI = 80001
 )
 
 var Coins = map[uint]Coin{
@@ -124,6 +125,16 @@ var Coins = map[uint]Coin{
 		BlockTime:        2000,
 		MinConfirmations: 0,
 		Blockchain:       "Near",
+	},
+	MUMBAI: {
+		ID:               80001,
+		Handle:           "mumbai",
+		Symbol:           "MATIC",
+		Name:             "MUMBAI",
+		Decimals:         24,
+		BlockTime:        3000,
+		MinConfirmations: 0,
+		Blockchain:       "Mumbai",
 	},
 }
 
@@ -198,6 +209,16 @@ var Chains = map[string]Coin{
 		MinConfirmations: 0,
 		Blockchain:       "Near",
 	},
+	Mumbai().Handle: {
+		ID:               80001,
+		Handle:           "mumbai",
+		Symbol:           "MATIC",
+		Name:             "MUMBAI",
+		Decimals:         24,
+		BlockTime:        2000,
+		MinConfirmations: 0,
+		Blockchain:       "Mumbai",
+	},
 }
 
 func Ethereum() Coin {
@@ -226,5 +247,9 @@ func Smartchain() Coin {
 
 func Near() Coin {
 	return Coins[NEAR]
+}
+
+func Mumbai() Coin {
+	return Coins[MUMBAI]
 }
 

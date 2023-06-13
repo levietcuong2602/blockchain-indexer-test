@@ -17,4 +17,5 @@
 # Common
 /bin
 .vscode/
+.idea
 coverage.txt

@@ -94,5 +94,8 @@ type Config struct {
 		Near struct {
 			Node string `mapstructure:"node"`
 		} `mapstructure:"near"`
+		Mumbai struct {
+			Node string `mapstructure:"node"`
+		} `mapstructure:"mumbai"`
 	} `mapstructure:"platforms"`
 }

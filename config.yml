@@ -57,14 +57,16 @@ transaction_consumer:
   workers: 2
 
 platforms:
-  binance:
-    node: https://api.binance.org/bc
-    dex: https://dex.binance.org
-  cosmos:
-    node: https://node.atomscan.com/
-  ethereum:
-    node: https://ethereum-mainnet-rpc.allthatnode.com
-  smartchain:
-    node: https://bsc-dataseed1.binance.org
-  near:
-    node: https://rpc.mainnet.near.org
+#  binance:
+#    node: https://api.binance.org/bc
+#    dex: https://dex.binance.org
+#  cosmos:
+#    node: https://node.atomscan.com/
+#  ethereum:
+#    node: https://ethereum-mainnet-rpc.allthatnode.com
+#  smartchain:
+#    node: https://bsc-dataseed1.binance.org
+#  near:
+#    node: https://rpc.mainnet.near.org
+  mumbai:
+    node: https://rpc-mumbai.maticvigil.com

@@ -7,6 +7,7 @@ import (
 	"github.com/unanoc/blockchain-indexer/platform/binance"
 	"github.com/unanoc/blockchain-indexer/platform/cosmos"
 	"github.com/unanoc/blockchain-indexer/platform/ethereum"
+	"github.com/unanoc/blockchain-indexer/platform/mumbai"
 	"github.com/unanoc/blockchain-indexer/platform/near"
 )
 
@@ -25,12 +26,13 @@ type (
 
 func InitPlatforms() Platforms {
 	return Platforms{
-		coin.Binance().Handle: binance.Init(coin.BINANCE, config.Default.Platforms.Binance.Node,
-			config.Default.Platforms.Binance.Dex),
-		coin.Cosmos().Handle:     cosmos.Init(coin.COSMOS, cosmos.DenomAtom, config.Default.Platforms.Cosmos.Node),
-		coin.Ethereum().Handle:   ethereum.Init(coin.ETHEREUM, config.Default.Platforms.Ethereum.Node),
-		coin.Smartchain().Handle: ethereum.Init(coin.SMARTCHAIN, config.Default.Platforms.Smartchain.Node),
-		coin.Near().Handle:       near.Init(coin.NEAR, config.Default.Platforms.Near.Node),
+		//coin.Binance().Handle: binance.Init(coin.BINANCE, config.Default.Platforms.Binance.Node,
+		//	config.Default.Platforms.Binance.Dex),
+		//coin.Cosmos().Handle:     cosmos.Init(coin.COSMOS, cosmos.DenomAtom, config.Default.Platforms.Cosmos.Node),
+		//coin.Ethereum().Handle:   ethereum.Init(coin.ETHEREUM, config.Default.Platforms.Ethereum.Node),
+		//coin.Smartchain().Handle: ethereum.Init(coin.SMARTCHAIN, config.Default.Platforms.Smartchain.Node),
+		//coin.Near().Handle:       near.Init(coin.NEAR, config.Default.Platforms.Near.Node),
+		coin.Mumbai().Handle: mumbai.Init(coin.MUMBAI, config.Default.Platforms.Mumbai.Node),
 	}
 }
 
@@ -47,6 +49,8 @@ func GetPlatform(chain string, url string) Platform {
 		return ethereum.Init(coin.SMARTCHAIN, url)
 	case coin.Near().Handle:
 		return near.Init(coin.NEAR, url)
+	case coin.Mumbai().Handle:
+		return mumbai.Init(coin.MUMBAI, url)
 	default:
 		return nil
 	}

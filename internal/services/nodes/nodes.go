@@ -83,6 +83,15 @@ var nodesList = map[string][]models.Node{
 			Monitoring: true,
 		},
 	},
+	"mumbai": {
+		{
+			Chain:      "mumbai",
+			Scheme:     "https",
+			Host:       "rpc-mumbai.maticvigil.com",
+			Enabled:    true,
+			Monitoring: true,
+		},
+	},
 }
 
 func AddNodesListToDB(db *postgres.Database) error {
