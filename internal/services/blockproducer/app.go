@@ -47,7 +47,8 @@ func NewApp() *App {
 	creatKafkaTopics(platforms)
 
 	kafka := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:      strings.Split(config.Default.Kafka.Brokers, ","),
+		Brokers: strings.Split(config.Default.Kafka.Brokers, ","),
+		// Brokers:      []string{"localhost:9092"},
 		MaxAttempts:  config.Default.Kafka.MaxAttempts,
 		BatchBytes:   config.Default.Kafka.MessageMaxBytes,
 		RequiredAcks: -1,
@@ -135,6 +136,7 @@ func creatKafkaTopics(platforms platform.Platforms) {
 
 	var controllerConn *kafka.Conn
 	controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	// controllerConn, err = kafka.Dial("tcp", "localhost:9092")
 	if err != nil {
 		log.WithError(err).Fatal("Kafka dial error")
 	}

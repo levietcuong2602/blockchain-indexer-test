@@ -1,10 +1,21 @@
 package mumbai
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/unanoc/blockchain-indexer/pkg/client"
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/strings"
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/types"
 	"math/big"
-	"strings"
+)
+
+const (
+	MethodBlockNumber        = "eth_blockNumber"
+	MethodBlockByNumber      = "eth_getBlockByNumber"
+	MethodTransactionReceipt = "eth_getTransactionReceipt"
+	MethodClientVersion      = "web3_clientVersion"
+
+	rpcBatchSize = 45
 )
 
 type Client struct {
@@ -12,43 +23,79 @@ type Client struct {
 }
 
 func (c *Client) GetCurrentBlockNumber() (int64, error) {
-	blockNumberBytes, _ := c.RPCCallRaw("eth_blockNumber", map[string]string{"finality": "final"})
-	// Get the block number from the response
-	blockNumberHex := string(blockNumberBytes)
-	blockNumberHex = strings.Trim(blockNumberHex, "\"")
+	var blockNumber types.HexNumber
 
-	// Convert the block number from hexadecimal to decimal
-	blockNumber := new(big.Int)
-	blockNumber.SetString(blockNumberHex[2:], 16)
-	blockNumber.Int64()
-	fmt.Println("Current block number:", blockNumber.Int64())
+	err := c.RPCCall(&blockNumber, MethodBlockNumber, nil)
+	if err != nil {
+		return 0, err
+	}
 
-	return blockNumber.Int64(), nil
+	return (*big.Int)(&blockNumber).Int64(), nil
 }
 
-func (c *Client) GetBlockByNumber(num int64) (ChunkDetail, error) {
+func (c *Client) GetBlockByNumber(num int64) (*Block, error) {
 	var block Block
+	params := []interface{}{(*types.HexNumber)(new(big.Int).SetInt64(num)), true}
 
-	if err := c.RPCCall(&block, "block", map[string]int64{"block_id": num}); err != nil || len(block.Chunks) == 0 {
-		return ChunkDetail{}, err
+	if err := c.RPCCall(&block, MethodBlockByNumber, params); err != nil {
+		return nil, err
 	}
 
-	var chunk ChunkDetail
-	if err := c.RPCCall(&chunk, "chunk", []string{block.Chunks[0].Hash}); err != nil {
-		return ChunkDetail{}, err
+	return &block, nil
+}
+
+func (c *Client) GetTransactionReceipts(hash ...string) (TransactionReceipts, error) {
+	if len(hash) == 0 {
+		return nil, nil
 	}
 
-	chunk.Header.Timestamp = block.Header.Timestamp
+	requestChunks := client.MakeBatchRequests(strings.StringSliceToInterfaces(hash...), rpcBatchSize,
+		c.hashToRPCRequestMapper(MethodTransactionReceipt))
 
-	return chunk, nil
+	var responses []client.RPCResponse
+	for _, requestsChunk := range requestChunks {
+		chunkResponses, err := c.RPCBatchCall(requestsChunk)
+		if err != nil {
+			return nil, err
+		}
+
+		responses = append(responses, chunkResponses...)
+	}
+
+	responseResults := make([]interface{}, len(responses))
+	for i, response := range responses {
+		responseResults[i] = response.Result
+	}
+
+	responseResultBytes, err := json.Marshal(responseResults)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal json: %w", err)
+	}
+
+	var result []TransactionReceipt
+	if err = json.Unmarshal(responseResultBytes, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal json: %w", err)
+	}
+
+	return result, nil
+}
+
+func (c *Client) hashToRPCRequestMapper(method string) func(interface{}) client.RPCRequest {
+	return func(i interface{}) client.RPCRequest {
+		array := []interface{}{i}
+
+		return client.RPCRequest{
+			Method: method,
+			Params: array,
+		}
+	}
 }
 
 func (c *Client) GetVersion() (string, error) {
-	var nodeStatus NodeStatus
-
-	if err := c.RPCCall(&nodeStatus, "status", nil); err != nil {
+	var resp string
+	if err := c.RPCCall(&resp, MethodClientVersion, nil); err != nil {
 		return "", err
 	}
 
-	return nodeStatus.Version.Version, nil
+	return resp, nil
 }

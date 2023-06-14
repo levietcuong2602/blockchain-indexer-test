@@ -69,4 +69,4 @@ platforms:
 #  near:
 #    node: https://rpc.mainnet.near.org
   mumbai:
-    node: https://rpc-mumbai.maticvigil.com
+    node: https://polygon-mumbai.g.alchemy.com/v2/nf4tMvfGGwWRDhtGUcmBXaY0L-VJVseD
