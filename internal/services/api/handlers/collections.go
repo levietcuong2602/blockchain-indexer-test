@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"context"
+	"math"
+	"net/http"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/unanoc/blockchain-indexer/internal/repository"
 	"github.com/unanoc/blockchain-indexer/internal/services/api/dtos"
 	"github.com/unanoc/blockchain-indexer/internal/services/api/httperr"
-	"math"
-	"net/http"
 )
 
 type CollectionService struct {
@@ -24,13 +25,6 @@ func (s *TransactionService) GetCollections(ctx context.Context, name string,
 	collections, err := s.db.GetCollections(ctx, name, page, limit, recent)
 	if err != nil {
 		log.WithError(err).Error("Getting collections error")
-
-		return nil, httperr.ErrInternalServer
-	}
-
-	transactions, err := ToTxs(txs)
-	if err != nil {
-		log.WithError(err).Error("Txs normalizing error")
 
 		return nil, httperr.ErrInternalServer
 	}
