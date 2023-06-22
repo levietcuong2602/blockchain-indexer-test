@@ -41,6 +41,9 @@ func Setup(db *Database) error {
 		&models.BlockTracker{},
 		&models.Transaction{},
 		&models.Node{},
+		&models.Block{},
+		&models.Collection{},
+		&models.Event{},
 	); err != nil {
 		return fmt.Errorf("failed to make auto migrations: %w", err)
 	}

@@ -18,4 +18,5 @@ func NewCollectionsAPI(db repository.Storage) API {
 
 func (api *CollectionsRouter) Setup(router *gin.RouterGroup) {
 	router.POST("/", api.controller.CreateCollection)
+	router.GET("/", api.controller.GetCollections)
 }

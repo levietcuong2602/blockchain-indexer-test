@@ -1,20 +1,18 @@
 package validations
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/unanoc/blockchain-indexer/internal/services/api/httperr"
+	"github.com/unanoc/blockchain-indexer/internal/services/api/dtos"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/unanoc/blockchain-indexer/internal/services/api/httperr"
 )
 
-type colelctionQueryParams struct {
-	Page   int
-	Limit  int
-	Recent bool
-}
-
-func ValidateCollectionsParams(c *gin.Context) (*colelctionQueryParams, *httperr.Error) {
+func ValidateCollectionsParams(c *gin.Context) (*dtos.GetCollectionQueryDtos, *httperr.Error) {
 	pageStr, ok := c.GetQuery("page")
 	if !ok {
 		pageStr = fmt.Sprintf("%d", defaultPage)
@@ -45,9 +43,30 @@ func ValidateCollectionsParams(c *gin.Context) (*colelctionQueryParams, *httperr
 		recent = true
 	}
 
-	return &colelctionQueryParams{
+	return &dtos.GetCollectionQueryDtos{
 		Page:   page,
 		Limit:  limit,
 		Recent: recent,
+	}, nil
+}
+
+func ValidateCreateCollectionParams(c *gin.Context) (*dtos.CreateCollectionBodyDtos, *httperr.Error) {
+	var collectionRequest dtos.CreateCollectionBodyDtos
+	if err := c.ShouldBind(&collectionRequest); err != nil {
+		errMessage, _ := json.Marshal(dtos.CreateBadRequestErrorDto(err))
+		return nil, httperr.NewError(http.StatusBadRequest, string(errMessage))
+	}
+
+	mintedTimestamp := collectionRequest.MintedTimestamp
+	if mintedTimestamp == 0 {
+		mintedTimestamp = time.Now().Unix()
+	}
+	return &dtos.CreateCollectionBodyDtos{
+		Name:            collectionRequest.Name,
+		Slug:            collectionRequest.Slug,
+		Contract:        collectionRequest.Contract,
+		Metadata:        collectionRequest.Metadata,
+		TokenCount:      collectionRequest.TokenCount,
+		MintedTimestamp: collectionRequest.MintedTimestamp,
 	}, nil
 }

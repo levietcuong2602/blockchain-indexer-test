@@ -11,18 +11,6 @@ import (
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
 )
 
-const (
-	ErrInvalidAddress    = "invalid address"
-	ErrInvalidPage       = "invalid page"
-	ErrInvalidLimit      = "invalid limit"
-	ErrInvalidChain      = "invalid chain"
-	ErrChainDoesNotExist = "chain doesn't exist"
-	ErrEmptyHash         = "empty hash"
-
-	defaultPage  = 1
-	defaultLimit = 30
-)
-
 type txsQueryParams struct {
 	Chain  string
 	Page   int

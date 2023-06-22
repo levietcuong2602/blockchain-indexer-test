@@ -2,12 +2,23 @@ package dtos
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"math"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
-func CreatePageMeta(request *http.Request, loadedItemsCount, page, page_size, totalItemsCount int) map[string]interface{} {
+type BaseDto struct {
+	Success      bool     `json:"success"`
+	FullMessages []string `json:"full_messages"`
+}
+
+type ErrorDto struct {
+	BaseDto
+	Errors map[string]interface{} `json:"errors"`
+}
+
+func CreatePageMeta(loadedItemsCount, page, page_size, totalItemsCount int) map[string]interface{} {
 	page_meta := map[string]interface{}{}
 	page_meta["offset"] = (page - 1) * page_size
 	page_meta["requested_page_size"] = page_size
@@ -32,8 +43,8 @@ func CreatePageMeta(request *http.Request, loadedItemsCount, page, page_size, to
 		page_meta["prev_page_number"] = 1
 	}
 
-	page_meta["next_page_url"] = fmt.Sprintf("%v?page=%d&page_size=%d", request.URL.Path, page_meta["next_page_number"], page_meta["requested_page_size"])
-	page_meta["prev_page_url"] = fmt.Sprintf("%s?page=%d&page_size=%d", request.URL.Path, page_meta["prev_page_number"], page_meta["requested_page_size"])
+	page_meta["next_page_url"] = fmt.Sprintf("/?page=%d&page_size=%d", page_meta["next_page_number"], page_meta["requested_page_size"])
+	page_meta["prev_page_url"] = fmt.Sprintf("/?page=%d&page_size=%d", page_meta["prev_page_number"], page_meta["requested_page_size"])
 
 	response := gin.H{
 		"success":   true,
@@ -43,9 +54,32 @@ func CreatePageMeta(request *http.Request, loadedItemsCount, page, page_size, to
 	return response
 }
 
-func CreatePagedResponse(request *http.Request, resources []interface{}, resource_name string, page, page_size, totalItemsCount int) map[string]interface{} {
+func CreatePagedResponse(resources []interface{}, resource_name string, page, page_size, totalItemsCount int) map[string]interface{} {
 
-	response := CreatePageMeta(request, len(resources), page, page_size, totalItemsCount)
+	response := CreatePageMeta(len(resources), page, page_size, totalItemsCount)
 	response[resource_name] = resources
 	return response
+}
+
+// This should only be called when we have an Error that is returned from a ShouldBind which contains a lot of information
+// other kind of errors should use other functions such as CreateDetailedErrorDto
+func CreateBadRequestErrorDto(err error) ErrorDto {
+	res := ErrorDto{}
+	res.Errors = make(map[string]interface{})
+	errs := err.(validator.ValidationErrors)
+	res.FullMessages = make([]string, len(errs))
+	count := 0
+	for _, v := range errs {
+		if v.ActualTag() == "required" {
+			var message = fmt.Sprintf("%v is required", v.Field)
+			res.Errors[v.Field()] = message
+			res.FullMessages[count] = message
+		} else {
+			var message = fmt.Sprintf("%v has to be %v", v.Field, v.ActualTag)
+			res.Errors[v.Field()] = message
+			res.FullMessages = append(res.FullMessages, message)
+		}
+		count++
+	}
+	return res
 }

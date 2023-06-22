@@ -22,6 +22,7 @@ type Storage interface {
 
 	// Collections
 	GetCollections(ctx context.Context, name string, page, limit int, recent bool) ([]models.Collection, error)
+	InsertCollection(ctx context.Context, collection models.Collection) (models.Collection, error)
 	GetCollectionTotalCount(ctx context.Context, name string) (int64, error)
 
 	// Nodes

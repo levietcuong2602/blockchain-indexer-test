@@ -2,8 +2,7 @@ package handlers
 
 import (
 	"context"
-	"math"
-	"net/http"
+	"github.com/unanoc/blockchain-indexer/internal/repository/models"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/unanoc/blockchain-indexer/internal/repository"
@@ -19,9 +18,9 @@ func NewCollectionService(dbConnector *repository.Storage) *CollectionService {
 	return &CollectionService{*dbConnector}
 }
 
-func (s *TransactionService) GetCollections(ctx context.Context, name string,
+func (s *CollectionService) GetCollections(ctx context.Context, name string,
 	page, limit int, recent bool,
-) (*dtos.TxsResp, *httperr.Error) {
+) (interface{}, *httperr.Error) {
 	collections, err := s.db.GetCollections(ctx, name, page, limit, recent)
 	if err != nil {
 		log.WithError(err).Error("Getting collections error")
@@ -36,12 +35,16 @@ func (s *TransactionService) GetCollections(ctx context.Context, name string,
 		return nil, httperr.ErrInternalServer
 	}
 
-	return &dtos.TxsResp{
-		StatusCode: http.StatusOK,
-		TotalCount: totalCount,
-		TotalPages: int(math.Ceil(float64(totalCount) / float64(limit))),
-		PageNumber: page,
-		Limit:      limit,
-		Txs:        transactions,
-	}, nil
+	return dtos.CreatedCollectionPagedResponse(collections, page, limit, int(totalCount)), nil
+}
+
+func (s *CollectionService) CreateCollection(ctx context.Context, collection models.Collection) (*models.Collection, *httperr.Error) {
+	collection, err := s.db.InsertCollection(ctx, collection)
+	if err != nil {
+		log.WithError(err).Error("Getting of txs count error")
+
+		return nil, httperr.ErrInternalServer
+	}
+
+	return &collection, nil
 }
