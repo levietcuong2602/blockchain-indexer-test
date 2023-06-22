@@ -1,16 +1,17 @@
-package transactions
+package handlers
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/unanoc/blockchain-indexer/internal/repository"
+	"github.com/unanoc/blockchain-indexer/internal/services/api/dtos"
 	"math"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/unanoc/blockchain-indexer/internal/repository"
 	"github.com/unanoc/blockchain-indexer/internal/repository/models"
 	"github.com/unanoc/blockchain-indexer/internal/repository/postgres"
 	"github.com/unanoc/blockchain-indexer/internal/services/api/httperr"
@@ -18,18 +19,18 @@ import (
 
 var ErrTxDoesNotExist = errors.New("transaction does not exist")
 
-type Controller struct {
+type TransactionService struct {
 	db repository.Storage
 }
 
-func NewController(db repository.Storage) *Controller {
-	return &Controller{db: db}
+func NewTransactionService(dbConnector *repository.Storage) *TransactionService {
+	return &TransactionService{*dbConnector}
 }
 
-func (i *Controller) GetTransactions(ctx context.Context, chain string,
+func (s *TransactionService) GetTransactions(ctx context.Context, chain string,
 	page, limit int, recent bool,
-) (*TxsResp, *httperr.Error) {
-	txs, err := i.db.GetTransactions(ctx, chain, page, limit, recent)
+) (*dtos.TxsResp, *httperr.Error) {
+	txs, err := s.db.GetTransactions(ctx, chain, page, limit, recent)
 	if err != nil {
 		log.WithError(err).Error("Getting txs error")
 
@@ -43,14 +44,14 @@ func (i *Controller) GetTransactions(ctx context.Context, chain string,
 		return nil, httperr.ErrInternalServer
 	}
 
-	totalCount, err := i.db.GetTransactionTotalCount(ctx, chain)
+	totalCount, err := s.db.GetTransactionTotalCount(ctx, chain)
 	if err != nil {
 		log.WithError(err).Error("Getting of txs count error")
 
 		return nil, httperr.ErrInternalServer
 	}
 
-	return &TxsResp{
+	return &dtos.TxsResp{
 		StatusCode: http.StatusOK,
 		TotalCount: totalCount,
 		TotalPages: int(math.Ceil(float64(totalCount) / float64(limit))),
@@ -60,8 +61,8 @@ func (i *Controller) GetTransactions(ctx context.Context, chain string,
 	}, nil
 }
 
-func (i *Controller) GetTransactionByHash(ctx context.Context, chain, hash string) (*TxResp, *httperr.Error) {
-	tx, err := i.db.GetTransactionByHash(ctx, chain, hash)
+func (s *TransactionService) GetTransactionByHash(ctx context.Context, chain, hash string) (*dtos.TxResp, *httperr.Error) {
+	tx, err := s.db.GetTransactionByHash(ctx, chain, hash)
 	if err != nil {
 		if postgres.IsErrNotFound(err) {
 			return nil, httperr.NewError(http.StatusNotFound, ErrTxDoesNotExist.Error())
@@ -79,9 +80,9 @@ func (i *Controller) GetTransactionByHash(ctx context.Context, chain, hash strin
 		return nil, httperr.ErrInternalServer
 	}
 
-	return &TxResp{
+	return &dtos.TxResp{
 		StatusCode: http.StatusOK,
-		Tx: Tx{
+		Tx: dtos.Tx{
 			Hash:      tx.Hash,
 			Chain:     tx.Chain,
 			Height:    tx.Block,
@@ -97,10 +98,10 @@ func (i *Controller) GetTransactionByHash(ctx context.Context, chain, hash strin
 	}, nil
 }
 
-func (i *Controller) GetTransactionsByUser(ctx context.Context, chain string,
+func (s *TransactionService) GetTransactionsByUser(ctx context.Context, chain string,
 	address string, page, limit int, recent bool,
-) (*TxsResp, *httperr.Error) {
-	txs, err := i.db.GetTransactionsByAddress(ctx, chain, address, page, limit, recent)
+) (*dtos.TxsResp, *httperr.Error) {
+	txs, err := s.db.GetTransactionsByAddress(ctx, chain, address, page, limit, recent)
 	if err != nil {
 		log.WithError(err).Error("Getting txs by address error")
 
@@ -114,14 +115,14 @@ func (i *Controller) GetTransactionsByUser(ctx context.Context, chain string,
 		return nil, httperr.ErrInternalServer
 	}
 
-	totalCount, err := i.db.GetTransactionByAddressTotalCount(ctx, chain, address)
+	totalCount, err := s.db.GetTransactionByAddressTotalCount(ctx, chain, address)
 	if err != nil {
 		log.WithError(err).Error("Getting of user txs count error")
 
 		return nil, httperr.ErrInternalServer
 	}
 
-	return &TxsResp{
+	return &dtos.TxsResp{
 		StatusCode: http.StatusOK,
 		TotalCount: totalCount,
 		TotalPages: int(math.Ceil(float64(totalCount) / float64(limit))),
@@ -131,8 +132,8 @@ func (i *Controller) GetTransactionsByUser(ctx context.Context, chain string,
 	}, nil
 }
 
-func ToTxs(txs []models.Transaction) ([]Tx, error) {
-	transactions := make([]Tx, 0, len(txs))
+func ToTxs(txs []models.Transaction) ([]dtos.Tx, error) {
+	transactions := make([]dtos.Tx, 0, len(txs))
 
 	for _, tx := range txs {
 		var metadata interface{}
@@ -140,7 +141,7 @@ func ToTxs(txs []models.Transaction) ([]Tx, error) {
 			return nil, fmt.Errorf("failed to normalize db.Transaction to Tx: %w", err)
 		}
 
-		transactions = append(transactions, Tx{
+		transactions = append(transactions, dtos.Tx{
 			Hash:      tx.Hash,
 			Chain:     tx.Chain,
 			Height:    tx.Block,

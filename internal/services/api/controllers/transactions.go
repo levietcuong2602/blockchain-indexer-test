@@ -1,20 +1,24 @@
-package handlers
+package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-
 	"github.com/unanoc/blockchain-indexer/internal/repository"
-	"github.com/unanoc/blockchain-indexer/internal/services/api/controllers/transactions"
+	"github.com/unanoc/blockchain-indexer/internal/services/api/handlers"
+	"github.com/unanoc/blockchain-indexer/internal/services/api/validations"
 )
 
-type TransactionsAPI struct {
-	controller *transactions.Controller
+type ITransactionController interface {
+	GetTransactions(*gin.Context)
+	GetTransactionByHash(*gin.Context)
+	GetTransactionsByUser(*gin.Context)
 }
 
-func NewTransactionsAPI(db repository.Storage) API {
-	return &TransactionsAPI{
-		controller: transactions.NewController(db),
-	}
+type TransactionController struct {
+	service *handlers.TransactionService
+}
+
+func NewTransactionController(db repository.Storage) *TransactionController {
+	return &TransactionController{service: handlers.NewTransactionService(&db)}
 }
 
 // GetTransactions godoc
@@ -29,15 +33,15 @@ func NewTransactionsAPI(db repository.Storage) API {
 // @Failure      400  {object}  httperr.Error
 // @Failure      500  {object}  httperr.Error
 // @Router       /api/v1/transactions [get]
-func (api *TransactionsAPI) GetTransactions(c *gin.Context) {
-	params, err := validateTransactionsParams(c)
+func (api *TransactionController) GetTransactions(c *gin.Context) {
+	params, err := validations.ValidateTransactionsParams(c)
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)
 
 		return
 	}
 
-	response, err := api.controller.GetTransactions(c.Request.Context(),
+	response, err := api.service.GetTransactions(c.Request.Context(),
 		params.Chain, params.Page, params.Limit, params.Recent)
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)
@@ -59,15 +63,15 @@ func (api *TransactionsAPI) GetTransactions(c *gin.Context) {
 // @Failure      404  {object}  httperr.Error
 // @Failure      500  {object}  httperr.Error
 // @Router       /api/v1/transactions/{hash} [get]
-func (api *TransactionsAPI) GetTransactionByHash(c *gin.Context) {
-	params, err := validateTransactionParams(c)
+func (api *TransactionController) GetTransactionByHash(c *gin.Context) {
+	params, err := validations.ValidateTransactionParams(c)
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)
 
 		return
 	}
 
-	response, err := api.controller.GetTransactionByHash(c.Request.Context(), params.Chain, params.Hash)
+	response, err := api.service.GetTransactionByHash(c.Request.Context(), params.Chain, params.Hash)
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)
 
@@ -90,15 +94,15 @@ func (api *TransactionsAPI) GetTransactionByHash(c *gin.Context) {
 // @Failure      400  {object}  httperr.Error
 // @Failure      500  {object}  httperr.Error
 // @Router       /api/v1/transactions/user [get]
-func (api *TransactionsAPI) GetTransactionsByUser(c *gin.Context) {
-	params, err := validateUserTransactionsParams(c)
+func (api *TransactionController) GetTransactionsByUser(c *gin.Context) {
+	params, err := validations.ValidateUserTransactionsParams(c)
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)
 
 		return
 	}
 
-	response, err := api.controller.GetTransactionsByUser(c.Request.Context(),
+	response, err := api.service.GetTransactionsByUser(c.Request.Context(),
 		params.Chain, params.Address, params.Page, params.Limit, params.Recent)
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)

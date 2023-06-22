@@ -1,5 +1,5 @@
 FROM golang:1.17
-LABEL author='Daniel'
+LABEL author='Cuong'
 
 WORKDIR app/
 COPY go.mod go.sum ./

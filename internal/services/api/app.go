@@ -9,7 +9,7 @@ import (
 	"github.com/unanoc/blockchain-indexer/internal/prometheus"
 	"github.com/unanoc/blockchain-indexer/internal/repository/postgres"
 	"github.com/unanoc/blockchain-indexer/internal/services"
-	"github.com/unanoc/blockchain-indexer/internal/services/api/handlers"
+	"github.com/unanoc/blockchain-indexer/internal/services/api/routes"
 	"github.com/unanoc/blockchain-indexer/pkg/http"
 	"github.com/unanoc/blockchain-indexer/pkg/service"
 )
@@ -33,7 +33,7 @@ func NewApp() *App {
 	prometheus := prometheus.NewPrometheus(config.Default.Prometheus.NameSpace, config.Default.Prometheus.SubSystem)
 	prometheus.RegisterAPIMetrics()
 
-	router := handlers.NewRouter(db, prometheus)
+	router := routes.NewRouter(db, prometheus)
 	server := http.NewHTTPServer(router, config.Default.Port)
 
 	return &App{server: server}

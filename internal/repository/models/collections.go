@@ -5,7 +5,7 @@ import "github.com/jinzhu/gorm/dialects/postgres"
 type Collection struct {
 	ID              int64 `gorm:"primary_key; auto_increment"`
 	Slug            string
-	Name            string
+	Name            string `gorm:"type:varchar(256); not_null"`
 	Metadata        postgres.Jsonb
 	Contract        string `gorm:"type:varchar(256); not_null"`
 	TokenCount      int64  `gorm:"default:0"`

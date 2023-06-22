@@ -1,4 +1,4 @@
-package handlers
+package routes
 
 import (
 	"net/http"
@@ -16,7 +16,7 @@ import (
 
 // API contains generic methods that should be used by other API interfaces.
 type API interface {
-	Setup(router *gin.Engine)
+	Setup(router *gin.RouterGroup)
 }
 
 func NewRouter(db repository.Storage, p *prometheus.Prometheus) http.Handler {
@@ -36,14 +36,10 @@ func NewRouter(db repository.Storage, p *prometheus.Prometheus) http.Handler {
 	router.Use(httplib.CORSMiddleware())
 	router.Use(prometheus.GinMetricsMiddleware(p))
 
+	apiRouteGroup := router.Group("/api/v1")
 	// Setup API routes
-	NewTransactionsAPI(db).Setup(router)
+	NewTransactionsAPI(db).Setup(apiRouteGroup.Group("/transactions"))
+	NewCollectionsAPI(db).Setup(apiRouteGroup.Group("/collections"))
 
 	return router
-}
-
-func (api *TransactionsAPI) Setup(router *gin.Engine) {
-	router.GET("/api/v1/transactions", api.GetTransactions)
-	router.GET("/api/v1/transactions/:hash", api.GetTransactionByHash)
-	router.GET("/api/v1/transactions/user", api.GetTransactionsByUser)
 }

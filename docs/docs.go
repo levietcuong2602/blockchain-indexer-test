@@ -11,8 +11,8 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "Daniel Lee",
-            "email": "daniel@internet.ru"
+            "name": "Cuong Lee",
+            "email": "Cuong@smartosc.com"
         },
         "license": {
             "name": "Apache 2.0",

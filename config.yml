@@ -37,6 +37,9 @@ prometheus:
     key: # X-API-Key
     push_interval: 30s
 
+api:
+  init_collections: true
+
 block_producer:
   interval: 10ms
   backoff_interval: 5s

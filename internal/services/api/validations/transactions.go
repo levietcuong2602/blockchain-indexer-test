@@ -1,4 +1,4 @@
-package handlers
+package validations
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ type txsQueryParams struct {
 	Recent bool
 }
 
-func validateTransactionsParams(c *gin.Context) (*txsQueryParams, *httperr.Error) {
+func ValidateTransactionsParams(c *gin.Context) (*txsQueryParams, *httperr.Error) {
 	chain, ok := c.GetQuery("chain")
 	if !ok {
 		return nil, httperr.NewError(http.StatusBadRequest, ErrInvalidChain)
@@ -84,7 +84,7 @@ type txQueryParams struct {
 	Hash  string
 }
 
-func validateTransactionParams(c *gin.Context) (*txQueryParams, *httperr.Error) {
+func ValidateTransactionParams(c *gin.Context) (*txQueryParams, *httperr.Error) {
 	chain, ok := c.GetQuery("chain")
 	if !ok {
 		return nil, httperr.NewError(http.StatusBadRequest, ErrInvalidChain)
@@ -106,8 +106,8 @@ type txsUserQueryParams struct {
 	Address string
 }
 
-func validateUserTransactionsParams(c *gin.Context) (*txsUserQueryParams, *httperr.Error) {
-	txsParams, err := validateTransactionsParams(c)
+func ValidateUserTransactionsParams(c *gin.Context) (*txsUserQueryParams, *httperr.Error) {
+	txsParams, err := ValidateTransactionsParams(c)
 	if err != nil {
 		return nil, err
 	}

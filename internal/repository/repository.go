@@ -20,6 +20,10 @@ type Storage interface {
 	GetTransactionTotalCount(ctx context.Context, chain string) (int64, error)
 	GetTransactionByAddressTotalCount(ctx context.Context, chain, address string) (int64, error)
 
+	// Collections
+	GetCollections(ctx context.Context, name string, page, limit int, recent bool) ([]models.Collection, error)
+	GetCollectionTotalCount(ctx context.Context, name string) (int64, error)
+
 	// Nodes
 	InsertNodes(ctx context.Context, nodes []models.Node) error
 	GetNodes(ctx context.Context) ([]models.Node, error)

@@ -10,8 +10,8 @@ import (
 // @title   Blockchain Indexer API
 // @version 1.0
 
-// @contact.name  Daniel Lee
-// @contact.email daniel@internet.ru
+// @contact.name  Cuong Lee
+// @contact.email Cuong@smartosc.com
 
 // @license.name Apache 2.0
 // @license.url  http://www.apache.org/licenses/LICENSE-2.0.html
