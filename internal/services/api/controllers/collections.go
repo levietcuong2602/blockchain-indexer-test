@@ -44,9 +44,9 @@ func (api *CollectionController) CreateCollection(c *gin.Context) {
 	// TODO: Field metadata jsonb
 
 	response, err := api.service.CreateCollection(c.Request.Context(), models.Collection{
-		Name:            params.Name,
-		Slug:            params.Slug,
-		Metadata:        params.Metadata,
+		Name: params.Name,
+		Slug: params.Slug,
+		//Metadata:        params.Metadata,
 		Contract:        params.Contract,
 		TokenCount:      params.TokenCount,
 		MintedTimestamp: params.MintedTimestamp,

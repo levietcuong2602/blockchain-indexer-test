@@ -103,6 +103,7 @@ func (p *Platform) normalizeBaseOfTx(srcTx Transaction,
 		Fee: types.Fee{
 			Asset: p.Coin().AssetID(),
 		},
+		BlockHash: srcTx.BlockHash,
 	}
 
 	if srcTx.Nonce == nil {

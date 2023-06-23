@@ -42,6 +42,7 @@ type (
 		Memo           string          `json:"memo,omitempty"`
 		Fee            Fee             `json:"fee" bson:"type"`
 		Metadata       interface{}     `json:"metadata" bson:"metadata"`
+		BlockHash      string          `json:"blockhash" bson:"blockhash"`
 	}
 
 	Fee struct {

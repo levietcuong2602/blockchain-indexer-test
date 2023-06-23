@@ -51,6 +51,8 @@ func (ts *TransactionSaver) Process(message mq.Message) error {
 		return fmt.Errorf("failed to normalized txs: %w", err)
 	}
 
+	// Save transaction info
+	// TODO: Save block, event, token, nft_balances
 	if err = ts.db.InsertTransactions(context.Background(), normalizedTxs); err != nil {
 		return fmt.Errorf("failed to insert txs: %w", err)
 	}

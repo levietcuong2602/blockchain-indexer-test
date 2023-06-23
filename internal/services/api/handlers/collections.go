@@ -39,12 +39,12 @@ func (s *CollectionService) GetCollections(ctx context.Context, name string,
 }
 
 func (s *CollectionService) CreateCollection(ctx context.Context, collection models.Collection) (*models.Collection, *httperr.Error) {
-	collection, err := s.db.InsertCollection(ctx, collection)
+	coll, err := s.db.InsertCollection(ctx, collection)
 	if err != nil {
 		log.WithError(err).Error("Getting of txs count error")
 
 		return nil, httperr.ErrInternalServer
 	}
 
-	return &collection, nil
+	return coll, nil
 }
