@@ -21,7 +21,8 @@ type Transaction struct {
 	Status         types.Status
 	Type           types.TransactionType
 	Metadata       postgres.Jsonb
-	CreatedAt      int64 `gorm:"auto_create_time"`
+	BlockHash      string `gorm:"column:blockhash;type:char(66);not null;index"`
+	Events         Event  `gorm:"foreignKey:txhash;constraint:OnDelete:CASCADE;"`
 }
 
 func NormalizeTransaction(tx types.Tx, chain string) (*Transaction, error) {
@@ -36,6 +37,7 @@ func NormalizeTransaction(tx types.Tx, chain string) (*Transaction, error) {
 		Status:         tx.Status,
 		Type:           tx.Type,
 		Fee:            string(tx.Fee.Amount),
+		BlockHash:      tx.BlockHash,
 	}
 
 	metadataRaw, err := json.Marshal(tx.Metadata)

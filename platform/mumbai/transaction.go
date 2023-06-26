@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	log "github.com/sirupsen/logrus"
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/address"
 	"math/big"
@@ -17,7 +18,7 @@ var ErrTransferActionUnmarshal = errors.New("unable marshaling to transfer actio
 
 const hashEventTypeTransfer = "0xddf252ad"
 
-func (p *Platform) NormalizeRawBlock(rawBlock []byte) (types.Txs, error) {
+func (p *Platform) NormalizeRawBlock(rawBlock []byte) (*types.Block, error) {
 	var block Block
 	if err := json.Unmarshal(rawBlock, &block); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal json: %w", err)
@@ -26,7 +27,31 @@ func (p *Platform) NormalizeRawBlock(rawBlock []byte) (types.Txs, error) {
 	return p.NormalizeBlock(block, block.TxReceipts.Map()), nil
 }
 
-func (p *Platform) NormalizeBlock(block Block, receipts map[string]TransactionReceipt) types.Txs {
+func (p *Platform) NormalizeBlock(block Block, receipts map[string]TransactionReceipt) *types.Block {
+	size, _ := new(big.Float).SetInt((*big.Int)(block.Size)).Float64()
+
+	uncleHash := ""
+	for _, uncle := range block.Uncles {
+		uncleHash = uncleHash + "," + uncle.(string)
+	}
+
+	normalizeBlock := types.Block{
+		Hash:                block.Hash,
+		Number:              (*big.Int)(block.Number).Uint64(),
+		Time:                (*big.Int)(block.Timestamp).Uint64(),
+		ParentHash:          block.ParentHash,
+		Difficulty:          (*big.Int)(block.Difficulty).String(),
+		GasUsed:             (*big.Int)(block.GasUsed).Uint64(),
+		GasLimit:            (*big.Int)(block.GasLimit).Uint64(),
+		Nonce:               (*big.Int)(block.Nonce).String(),
+		Miner:               block.Miner,
+		Size:                size,
+		StateRootHash:       block.StateRoot,
+		UncleHash:           uncleHash,
+		TransactionRootHash: block.TransactionsRoot,
+		ReceiptRootHash:     block.ReceiptsRoot,
+		ExtraData:           []byte(block.ExtraData),
+	}
 	txs := make(types.Txs, 0)
 
 	for _, tx := range block.Transactions {
@@ -55,8 +80,9 @@ func (p *Platform) NormalizeBlock(block Block, receipts map[string]TransactionRe
 
 		txs = append(txs, *normalized)
 	}
+	normalizeBlock.Txs = txs
 
-	return txs
+	return &normalizeBlock
 }
 
 func (p *Platform) NormalizeTransaction(receipt TransactionReceipt, tx Transaction, block Block) *types.Tx {
@@ -93,6 +119,8 @@ func (p *Platform) normalizeBaseOfTx(srcTx Transaction,
 		return nil
 	}
 
+	events := p.NormalizeEventLog(receipt.Logs)
+
 	tx := &types.Tx{
 		Hash:           srcTx.Hash,
 		Chain:          p.Coin().Handle,
@@ -103,6 +131,8 @@ func (p *Platform) normalizeBaseOfTx(srcTx Transaction,
 		Fee: types.Fee{
 			Asset: p.Coin().AssetID(),
 		},
+		BlockHash: srcTx.BlockHash,
+		Events:    events,
 	}
 
 	if srcTx.Nonce == nil {
@@ -122,6 +152,25 @@ func (p *Platform) normalizeBaseOfTx(srcTx Transaction,
 	tx.Fee.Amount = types.Amount(feeValue)
 
 	return tx
+}
+
+func (p *Platform) NormalizeEventLog(eventLogs []EventLog) []types.Event {
+	events := make([]types.Event, 0)
+	for _, eventLog := range eventLogs {
+		events = append(events, types.Event{
+			Address:          eventLog.Address,
+			Topics:           eventLog.Topics,
+			Data:             eventLog.Data,
+			BlockNumber:      eventLog.BlockNumber,
+			TransactionHash:  eventLog.TransactionHash,
+			TransactionIndex: eventLog.TransactionIndex,
+			BlockHash:        eventLog.BlockHash,
+			LogIndex:         eventLog.LogIndex,
+			Removed:          eventLog.Removed,
+		})
+	}
+
+	return events
 }
 
 func (p *Platform) NormalizeCoinTransfer(srcTx Transaction,
@@ -243,4 +292,24 @@ func (p *Platform) checkTransfer(logs []EventLog) (bool, EventLog) {
 	}
 
 	return transferLogsNum == 1, transferLog
+}
+
+func DecodeTransferLog(logs []EventLog) []LogTransfer {
+	var transferEvents []LogTransfer
+	var transferEvent LogTransfer
+
+	transferEventHash := crypto.Keccak256Hash([]byte("Transfer(address,address,uint256)"))
+
+	for _, vLog := range logs {
+		if strings.Compare(vLog.Topics[0], transferEventHash.Hex()) == 0 && len(vLog.Topics) >= 4 {
+			func() {
+				transferEvent.From = common.HexToAddress(vLog.Topics[1])
+				transferEvent.To = common.HexToAddress(vLog.Topics[2])
+				transferEvent.TokenId = common.HexToHash(vLog.Topics[3]).Big()
+				transferEvents = append(transferEvents, transferEvent)
+			}()
+		}
+	}
+
+	return transferEvents
 }

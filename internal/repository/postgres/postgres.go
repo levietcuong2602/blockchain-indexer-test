@@ -38,10 +38,10 @@ func Setup(db *Database) error {
 	conn := db.Gorm.Begin()
 
 	if err := conn.AutoMigrate(
+		&models.Block{},
 		&models.BlockTracker{},
 		&models.Transaction{},
 		&models.Node{},
-		&models.Block{},
 		&models.Collection{},
 		&models.Event{},
 	); err != nil {
