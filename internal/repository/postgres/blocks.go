@@ -9,11 +9,11 @@ import (
 	"github.com/unanoc/blockchain-indexer/internal/repository/models"
 )
 
-func (d *Database) InsertBlocks(ctx context.Context, blocks []models.Block) error {
+func (d *Database) InsertBlock(ctx context.Context, block models.Block) error {
 	if err := d.Gorm.
 		WithContext(ctx).
 		Clauses(clause.OnConflict{DoNothing: true}).
-		Create(&blocks).Error; err != nil {
+		Create(&block).Error; err != nil {
 		return fmt.Errorf("failed to insert blocks: %w", err)
 	}
 

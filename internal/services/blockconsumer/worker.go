@@ -61,12 +61,12 @@ func (w *Worker) run(ctx context.Context) error {
 		return fmt.Errorf("failed to fetch kafka message: %w", err)
 	}
 
-	txs, err := w.API.NormalizeRawBlock(message.Value)
+	block, err := w.API.NormalizeRawBlock(message.Value)
 	if err != nil {
 		return fmt.Errorf("failed to normalize raw block: %w", err)
 	}
 
-	if err = w.publishToExchange(txs); err != nil {
+	if err = w.publishToExchange(*block); err != nil {
 		return fmt.Errorf("failed to publish to exchange: %w", err)
 	}
 
@@ -77,11 +77,11 @@ func (w *Worker) run(ctx context.Context) error {
 
 	w.prometheus.SetBlocksConsumerTopicPartitionOffset(chain, message.Topic, message.Partition, message.Offset)
 
-	if len(txs) > 0 {
+	if len(block.Txs) > 0 {
 		log.WithFields(log.Fields{
 			"chain":     w.API.Coin().Handle,
-			"txs":       len(txs),
-			"block":     int(txs[0].Block),
+			"txs":       len(block.Txs),
+			"block":     int(block.Txs[0].Block),
 			"partition": message.Partition,
 			"offset":    message.Offset,
 		}).Info("Transactions have been consumed")
@@ -90,14 +90,14 @@ func (w *Worker) run(ctx context.Context) error {
 	return nil
 }
 
-func (w *Worker) publishToExchange(txs types.Txs) error {
-	if len(txs) == 0 {
+func (w *Worker) publishToExchange(block types.Block) error {
+	if len(block.Txs) == 0 {
 		return nil
 	}
 
-	logFields := log.Fields{"chain": w.API.Coin().Handle, "txs": txs[:1]}
+	logFields := log.Fields{"chain": w.API.Coin().Handle, "txs": block.Txs[:1]}
 
-	body, err := json.Marshal(txs)
+	body, err := json.Marshal(block)
 	if err != nil {
 		log.WithFields(logFields).Error(err)
 

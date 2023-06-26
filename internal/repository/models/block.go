@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/types"
+)
+
 // Block - Mined block info holder table model
 type Block struct {
 	Hash                string      `gorm:"column:hash;type:char(66);primaryKey"`
@@ -19,4 +23,26 @@ type Block struct {
 	ExtraData           []byte      `gorm:"column:extra_data;type:bytea"`
 	Transactions        Transaction `gorm:"foreignKey:blockhash"`
 	Events              Event       `gorm:"foreignKey:blockhash"`
+}
+
+func NormalizeBlock(block types.Block) (*Block, error) {
+	normalizeBlock := Block{
+		Hash:                block.Hash,
+		Number:              block.Number,
+		Time:                block.Time,
+		ParentHash:          block.ParentHash,
+		Difficulty:          block.Difficulty,
+		GasUsed:             block.GasUsed,
+		GasLimit:            block.GasLimit,
+		Nonce:               block.Nonce,
+		Miner:               block.Miner,
+		Size:                block.Size,
+		StateRootHash:       block.StateRootHash,
+		UncleHash:           block.UncleHash,
+		TransactionRootHash: block.TransactionRootHash,
+		ReceiptRootHash:     block.ReceiptRootHash,
+		ExtraData:           block.ExtraData,
+	}
+
+	return &normalizeBlock, nil
 }

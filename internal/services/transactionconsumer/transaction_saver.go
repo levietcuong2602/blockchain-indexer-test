@@ -29,32 +29,46 @@ func NewTransactionSaver(db *postgres.Database, p *prometheus.Prometheus) mq.Mes
 }
 
 func (ts *TransactionSaver) Process(message mq.Message) error {
-	var txs types.Txs
+	var block types.Block
 
-	if err := json.Unmarshal(message, &txs); err != nil {
+	if err := json.Unmarshal(message, &block); err != nil {
 		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
 
 	log.WithFields(log.Fields{
 		"service": serviceName,
-		"txs":     len(txs),
+		"txs":     len(block.Txs),
 	}).Info("Consumed")
 
-	if len(txs) == 0 {
+	normalizedBlock, err := models.NormalizeBlock(block)
+	if err != nil {
+		return fmt.Errorf("failed to normalized block: %w", err)
+	}
+	if err = ts.db.InsertBlock(context.Background(), *normalizedBlock); err != nil {
+		return fmt.Errorf("failed to insert block: %w", err)
+	}
+	if len(block.Txs) == 0 {
 		return nil
 	}
 
-	chain := txs[0].Chain
-
-	normalizedTxs, err := models.NormalizeTransactions(txs, chain)
+	chain := block.Txs[0].Chain
+	normalizedTxs, err := models.NormalizeTransactions(block.Txs, chain)
 	if err != nil {
 		return fmt.Errorf("failed to normalized txs: %w", err)
 	}
 
-	// Save transaction info
-	// TODO: Save block, event, token, nft_balances
 	if err = ts.db.InsertTransactions(context.Background(), normalizedTxs); err != nil {
 		return fmt.Errorf("failed to insert txs: %w", err)
+	}
+
+	for _, tx := range block.Txs {
+		normalizeEvents, err := models.NormalizeEvents(tx.Events)
+		if err != nil {
+			return fmt.Errorf("failed to normalized event: %w", err)
+		}
+		if err = ts.db.InsertEvents(context.Background(), normalizeEvents); err != nil {
+			return fmt.Errorf("failed to insert events: %w", err)
+		}
 	}
 
 	ts.prometheus.SetParsedTxs(chain, len(normalizedTxs))

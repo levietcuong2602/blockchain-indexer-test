@@ -3,6 +3,7 @@ package mumbai
 import (
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/types"
 	"math/big"
 )
@@ -87,6 +88,13 @@ type (
 	}
 
 	TransactionReceipts []TransactionReceipt
+
+	//	Event struct
+	LogTransfer struct {
+		From    common.Address
+		To      common.Address
+		TokenId *big.Int
+	}
 )
 
 func (tr TransactionReceipts) Map() map[string]TransactionReceipt {

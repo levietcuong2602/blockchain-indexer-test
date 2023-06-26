@@ -3,6 +3,8 @@ package blockproducer
 import (
 	"context"
 	"fmt"
+	"net"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -127,14 +129,14 @@ func creatKafkaTopics(platforms platform.Platforms) {
 	}
 	defer conn.Close()
 
-	//controller, err := conn.Controller()
-	//if err != nil {
-	//	log.WithError(err).Fatal("Kafka Controller init error")
-	//}
+	controller, err := conn.Controller()
+	if err != nil {
+		log.WithError(err).Fatal("Kafka Controller init error")
+	}
 
 	var controllerConn *kafka.Conn
-	//controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
-	controllerConn, err = kafka.Dial("tcp", "localhost:9092")
+	controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	//controllerConn, err = kafka.Dial("tcp", "localhost:9092")
 	if err != nil {
 		log.WithError(err).Fatal("Kafka dial error")
 	}
