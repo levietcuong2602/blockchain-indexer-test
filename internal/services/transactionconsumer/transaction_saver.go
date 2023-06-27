@@ -75,3 +75,12 @@ func (ts *TransactionSaver) Process(message mq.Message) error {
 
 	return nil
 }
+
+func (ts *TransactionSaver) HandleDecodeTransaction(tx types.Tx) {
+	//contractAddress := tx.To
+	// Check in collection
+
+	//for _, event := range tx.Events {
+	//
+	//}
+}

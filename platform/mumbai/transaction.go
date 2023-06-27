@@ -294,7 +294,7 @@ func (p *Platform) checkTransfer(logs []EventLog) (bool, EventLog) {
 	return transferLogsNum == 1, transferLog
 }
 
-func DecodeTransferLog(logs []EventLog) []LogTransfer {
+func (p *Platform) DecodeTransferLog(logs []EventLog) []LogTransfer {
 	var transferEvents []LogTransfer
 	var transferEvent LogTransfer
 
