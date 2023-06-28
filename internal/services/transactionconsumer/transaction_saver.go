@@ -77,8 +77,17 @@ func (ts *TransactionSaver) Process(message mq.Message) error {
 }
 
 func (ts *TransactionSaver) HandleDecodeTransaction(tx types.Tx) {
-	//contractAddress := tx.To
+	// TODO: Optimize detect smart contract address
+	contractAddress := tx.To
 	// Check in collection
+	conllection, err := ts.db.FindCollectionByContract(context.Background(), contractAddress)
+	if err != nil {
+		return
+	}
+
+	if conllection.ID == 0 {
+		return
+	}
 
 	//for _, event := range tx.Events {
 	//
