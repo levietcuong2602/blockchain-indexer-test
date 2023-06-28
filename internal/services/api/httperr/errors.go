@@ -5,8 +5,9 @@ import (
 )
 
 var (
-	ErrBadRequest     = NewError(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
-	ErrInternalServer = NewError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	ErrBadRequest        = NewError(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+	ErrInternalServer    = NewError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	ErrCollectionExisted = NewError(http.StatusInternalServerError, "Collection existed")
 )
 
 type Error struct {

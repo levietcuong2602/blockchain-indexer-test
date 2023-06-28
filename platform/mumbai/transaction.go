@@ -297,7 +297,6 @@ func (p *Platform) checkTransfer(logs []EventLog) (bool, EventLog) {
 func (p *Platform) DecodeTransferLog(logs []EventLog) []LogTransfer {
 	var transferEvents []LogTransfer
 	var transferEvent LogTransfer
-
 	transferEventHash := crypto.Keccak256Hash([]byte("Transfer(address,address,uint256)"))
 
 	for _, vLog := range logs {

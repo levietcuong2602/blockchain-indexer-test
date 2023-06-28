@@ -106,10 +106,10 @@ func (c *Client) GetVersion() (string, error) {
 
 func (c *Client) GetByteCode(account common.Address, blockNumber *big.Int) ([]byte, error) {
 	var result hexutil.Bytes
-	params := []interface{}{account, numbers.ToBlockNumArg(blockNumber)}
-	if err := c.RPCCall(&result, MethodGetCode, params); err != nil {
+	params := []interface{}{account.Hex(), numbers.ToBlockNumArg(blockNumber)}
+	result, err := c.RPCCallRaw(MethodGetCode, params)
+	if err != nil {
 		return nil, err
 	}
-
 	return result, nil
 }

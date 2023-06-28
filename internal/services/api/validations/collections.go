@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/unanoc/blockchain-indexer/internal/services/api/dtos"
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -52,9 +54,19 @@ func ValidateCollectionsParams(c *gin.Context) (*dtos.GetCollectionQueryDtos, *h
 
 func ValidateCreateCollectionParams(c *gin.Context) (*dtos.CreateCollectionBodyDtos, *httperr.Error) {
 	var collectionRequest dtos.CreateCollectionBodyDtos
-	if err := c.ShouldBind(&collectionRequest); err != nil {
+	if err := c.ShouldBindJSON(&collectionRequest); err != nil {
 		errMessage, _ := json.Marshal(dtos.CreateBadRequestErrorDto(err))
 		return nil, httperr.NewError(http.StatusBadRequest, string(errMessage))
+	}
+
+	chain := collectionRequest.Chain
+	_, ok := coin.Chains[strings.ToLower(chain)]
+	if !ok {
+		return nil, httperr.NewError(http.StatusBadRequest, ErrChainDoesNotExist)
+	}
+
+	if collectionRequest.Name == "" {
+		return nil, httperr.NewError(http.StatusBadRequest, ErrInvalidName)
 	}
 
 	mintedTimestamp := collectionRequest.MintedTimestamp
@@ -62,9 +74,10 @@ func ValidateCreateCollectionParams(c *gin.Context) (*dtos.CreateCollectionBodyD
 		mintedTimestamp = time.Now().Unix()
 	}
 	return &dtos.CreateCollectionBodyDtos{
+		Chain:           chain,
 		Name:            collectionRequest.Name,
 		Slug:            collectionRequest.Slug,
-		Contract:        collectionRequest.Contract,
+		Contract:        strings.ToLower(collectionRequest.Contract),
 		Metadata:        collectionRequest.Metadata,
 		TokenCount:      collectionRequest.TokenCount,
 		MintedTimestamp: collectionRequest.MintedTimestamp,

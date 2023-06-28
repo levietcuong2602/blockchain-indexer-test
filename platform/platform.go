@@ -15,6 +15,7 @@ type (
 		GetVersion() (string, error)
 		NormalizeRawBlock(rawBlock []byte) (*types.Block, error)
 		UpdateNodeConnection(url string)
+		DetectSmartcontractStandard(address string) (string, error)
 	}
 
 	Platforms map[string]Platform

@@ -56,13 +56,11 @@ func EIP55Checksum(unchecksummed string) (string, error) {
 func IsERC20Contract(bytecode []byte) bool {
 	// Check ERC-20 feature elements in bytecode
 	// Returns true if the featured element is found, else returns false
-	// For example, check the functions balanceOf, transfer, transferFrom
-	balanceOfSignature := []byte("70a08231b98ef4ca268c9cc3f6b4590e4bfec28280db06bb5d45e689f2a360be")
-	transferSignature := []byte("a9059cbb2ab09eb219583f4a59a5d0623ade346d962bcd4e46b11da047c9049b")
-	transferFromSignature := []byte("23b872dd7302113369cda2901243429419bec145408fa8b352b3dd92b66c680b")
-	return bytes.Contains(bytecode, balanceOfSignature) &&
-		bytes.Contains(bytecode, transferSignature) &&
-		bytes.Contains(bytecode, transferFromSignature)
+	// For example, check the functions transfer and event Transfer
+	transferSignature := []byte("a9059cbb")
+	transferEventSignature := []byte("dd62ed3e")
+	return bytes.Contains(bytecode, transferSignature) &&
+		bytes.Contains(bytecode, transferEventSignature)
 }
 
 // Perform bytecode analysis to check if it corresponds to an ERC721 token
@@ -72,13 +70,10 @@ func IsERC20Contract(bytecode []byte) bool {
 func IsERC721Contract(bytecode []byte) bool {
 	// Check ERC-721 feature elements in bytecode
 	// Returns true if the featured element is found, else returns false
-	// For example, check the functions balanceOf, transfer, transferFrom
-	balanceOfSignature := []byte("70a08231b98ef4ca268c9cc3f6b4590e4bfec28280db06bb5d45e689f2a360be")
-	ownerOfSignature := []byte("6352211e6566aa027e75ac9dbf2423197fbd9b82b9d981a3ab367d355866aa1c")
-	transferFromSignature := []byte("23b872dd7302113369cda2901243429419bec145408fa8b352b3dd92b66c680b")
-	approveSignature := []byte("d8b964e6357ee70c418910c9b0ff9da8e4722edeed138382a45eb9edd75da0c1")
-	return bytes.Contains(bytecode, balanceOfSignature) &&
-		bytes.Contains(bytecode, ownerOfSignature) &&
-		bytes.Contains(bytecode, transferFromSignature) &&
-		bytes.Contains(bytecode, approveSignature)
+	// For example, check the functions transferFrom and event Transfer
+	transferFromSignature := []byte("23b872dd") // Hàm transferFrom có mã hash là keccak256("transferFrom(address,address,uint256)")
+	transferEventSignature := []byte("ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+
+	return bytes.Contains(bytecode, transferFromSignature) &&
+		bytes.Contains(bytecode, transferEventSignature)
 }

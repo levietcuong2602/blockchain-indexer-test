@@ -2,10 +2,10 @@ package dtos
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"math"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 type BaseDto struct {
@@ -71,11 +71,11 @@ func CreateBadRequestErrorDto(err error) ErrorDto {
 	count := 0
 	for _, v := range errs {
 		if v.ActualTag() == "required" {
-			var message = fmt.Sprintf("%v is required", v.Field)
+			var message = fmt.Sprintf("%v is required", v.Field())
 			res.Errors[v.Field()] = message
 			res.FullMessages[count] = message
 		} else {
-			var message = fmt.Sprintf("%v has to be %v", v.Field, v.ActualTag)
+			var message = fmt.Sprintf("%v has to be %v", v.Field(), v.ActualTag())
 			res.Errors[v.Field()] = message
 			res.FullMessages = append(res.FullMessages, message)
 		}

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"github.com/unanoc/blockchain-indexer/internal/repository/models"
+	"github.com/unanoc/blockchain-indexer/platform"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/unanoc/blockchain-indexer/internal/repository"
@@ -39,12 +40,30 @@ func (s *CollectionService) GetCollections(ctx context.Context, name string,
 }
 
 func (s *CollectionService) CreateCollection(ctx context.Context, collection models.Collection) (*models.Collection, *httperr.Error) {
+	collectionDB, err := s.db.FindCollectionByContract(ctx, collection.Contract)
+	if collectionDB != nil {
+		log.WithError(err).Error("Collection: ", collection.Contract, " existed!")
+		return nil, httperr.ErrCollectionExisted
+	}
+
 	coll, err := s.db.InsertCollection(ctx, collection)
 	if err != nil {
-		log.WithError(err).Error("Getting of txs count error")
-
+		log.WithError(err).Error("Insert collection error")
 		return nil, httperr.ErrInternalServer
 	}
 
 	return coll, nil
+}
+
+func (s *CollectionService) GetDetectSmartcontractStandard(contract string, chain string) models.ContractStandard {
+	platforms := platform.InitPlatforms()
+	platform := platforms[chain]
+
+	standard, err := platform.DetectSmartcontractStandard(contract)
+	if err != nil {
+		log.WithError(err).Error("Detect smart contract standard err")
+		return models.ContractStandard("UNKNOWN")
+	}
+
+	return models.ContractStandard(standard)
 }
