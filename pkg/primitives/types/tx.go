@@ -1,6 +1,8 @@
 package types
 
-import "github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
+import (
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
+)
 
 type (
 	Amount          string
@@ -83,6 +85,14 @@ type (
 	Transfer struct {
 		Asset  coin.AssetID `json:"asset"`
 		Amount Amount       `json:"amount"`
+	}
+
+	TransferLog struct {
+		From     string
+		To       string
+		Contract string
+		TokenId  *HexNumber
+		Amount   *HexNumber
 	}
 
 	ContractCall struct {
