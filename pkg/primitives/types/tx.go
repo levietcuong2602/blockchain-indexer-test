@@ -1,6 +1,8 @@
 package types
 
-import "github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
+import (
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/coin"
+)
 
 type (
 	Amount          string
@@ -23,8 +25,22 @@ const (
 
 type (
 	Block struct {
-		Number int64 `json:"number"`
-		Txs    []Tx  `json:"txs"`
+		Hash                string  `json:"string"`
+		Number              uint64  `json:"number"`
+		Time                uint64  `json:"time"`
+		ParentHash          string  `json:"parent_hash"`
+		Difficulty          string  `json:"difficulty"`
+		GasUsed             uint64  `json:"gas_used"`
+		GasLimit            uint64  `json:"gas_limit"`
+		Nonce               string  `json:"nonce"`
+		Miner               string  `json:"miner"`
+		Size                float64 `json:"size"`
+		StateRootHash       string  `json:"state_root_hash"`
+		UncleHash           string  `json:"uncle_hash"`
+		TransactionRootHash string  `json:"tx_root_hash"`
+		ReceiptRootHash     string  `json:"receipt_root_hash"`
+		ExtraData           []byte  `json:"extra_data"`
+		Txs                 []Tx    `json:"txs"`
 	}
 
 	Txs []Tx
@@ -42,11 +58,25 @@ type (
 		Memo           string          `json:"memo,omitempty"`
 		Fee            Fee             `json:"fee" bson:"type"`
 		Metadata       interface{}     `json:"metadata" bson:"metadata"`
+		BlockHash      string          `json:"blockhash" bson:"blockhash"`
+		Events         []Event         `json:"event" bson:"type"`
 	}
 
 	Fee struct {
 		Asset  coin.AssetID `json:"asset"`
 		Amount Amount       `json:"amount"`
+	}
+
+	Event struct {
+		Address          string     `json:"address"`
+		Topics           []string   `json:"topics"`
+		Data             string     `json:"data"`
+		BlockNumber      *HexNumber `json:"blockNumber"`
+		TransactionHash  string     `json:"transactionHash"`
+		TransactionIndex *HexNumber `json:"transactionIndex"`
+		BlockHash        string     `json:"blockHash"`
+		LogIndex         *HexNumber `json:"logIndex"`
+		Removed          bool       `json:"removed"`
 	}
 )
 
@@ -55,6 +85,14 @@ type (
 	Transfer struct {
 		Asset  coin.AssetID `json:"asset"`
 		Amount Amount       `json:"amount"`
+	}
+
+	TransferLog struct {
+		From     string
+		To       string
+		Contract string
+		TokenId  *HexNumber
+		Amount   *HexNumber
 	}
 
 	ContractCall struct {

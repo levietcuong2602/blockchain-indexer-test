@@ -53,3 +53,16 @@ func (d *Database) GetCollectionTotalCount(ctx context.Context, name string) (in
 
 	return totalCount, nil
 }
+
+func (d *Database) FindCollectionByContract(ctx context.Context, contract string) (*models.Collection, error) {
+	var collection models.Collection
+
+	if err := d.Gorm.
+		WithContext(ctx).
+		Where("contract = ?", contract).
+		First(&collection).Error; err != nil {
+		return nil, fmt.Errorf("failed to find collection: %w", err)
+	}
+
+	return &collection, nil
+}

@@ -1,13 +1,12 @@
 package controllers
 
 import (
-	"github.com/unanoc/blockchain-indexer/internal/repository/models"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/unanoc/blockchain-indexer/internal/repository"
+	"github.com/unanoc/blockchain-indexer/internal/repository/models"
 	"github.com/unanoc/blockchain-indexer/internal/services/api/handlers"
 	"github.com/unanoc/blockchain-indexer/internal/services/api/validations"
+	"net/http"
 )
 
 type ICollectionController interface {
@@ -29,6 +28,7 @@ func NewCollectionController(db repository.Storage) *CollectionController {
 // @Tags         Collection
 // @Produce      json
 // @Body        name query string false "Name of collection"
+// @Body        chain query string false "chain of collection"
 // @Body        slug query string false "Slug of collection"
 // @Body        contract query bool false "Contract Address"
 // @Success      200  {object}  collection.TxsResp
@@ -41,15 +41,18 @@ func (api *CollectionController) CreateCollection(c *gin.Context) {
 		c.JSON(err.GetStatusCode(), err)
 		return
 	}
-	// TODO: Field metadata jsonb
 
+	// TODO: Field metadata jsonb
+	standard := api.service.GetDetectSmartcontractStandard(params.Contract, params.Chain)
 	response, err := api.service.CreateCollection(c.Request.Context(), models.Collection{
-		Name:            params.Name,
-		Slug:            params.Slug,
-		Metadata:        params.Metadata,
+		Chain: models.Network(params.Chain),
+		Name:  params.Name,
+		Slug:  params.Slug,
+		//Metadata:        params.Metadata,
 		Contract:        params.Contract,
 		TokenCount:      params.TokenCount,
 		MintedTimestamp: params.MintedTimestamp,
+		Standard:        standard,
 	})
 	if err != nil {
 		c.JSON(err.GetStatusCode(), err)
@@ -59,6 +62,7 @@ func (api *CollectionController) CreateCollection(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
 func (api *CollectionController) UpdateCollection(c *gin.Context) {
 
 }

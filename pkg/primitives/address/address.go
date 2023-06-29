@@ -1,6 +1,7 @@
 package address
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"strings"
@@ -46,4 +47,33 @@ func EIP55Checksum(unchecksummed string) (string, error) {
 	val := string(result)
 
 	return "0x" + val, nil
+}
+
+// Perform bytecode analysis to check if it corresponds to an ERC20 token
+// Return true if the bytecode matches ERC20 patterns, otherwise return false
+// Example implementation:
+// Check if the bytecode contains the transfer function signature
+func IsERC20Contract(bytecode []byte) bool {
+	// Check ERC-20 feature elements in bytecode
+	// Returns true if the featured element is found, else returns false
+	// For example, check the functions transfer and event Transfer
+	transferSignature := []byte("a9059cbb")
+	transferEventSignature := []byte("dd62ed3e")
+	return bytes.Contains(bytecode, transferSignature) &&
+		bytes.Contains(bytecode, transferEventSignature)
+}
+
+// Perform bytecode analysis to check if it corresponds to an ERC721 token
+// Return true if the bytecode matches ERC721 patterns, otherwise return false
+// Example implementation:
+// Check if the bytecode contains the transfer function signature
+func IsERC721Contract(bytecode []byte) bool {
+	// Check ERC-721 feature elements in bytecode
+	// Returns true if the featured element is found, else returns false
+	// For example, check the functions transferFrom and event Transfer
+	transferFromSignature := []byte("23b872dd") // Hàm transferFrom có mã hash là keccak256("transferFrom(address,address,uint256)")
+	transferEventSignature := []byte("ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+
+	return bytes.Contains(bytecode, transferFromSignature) &&
+		bytes.Contains(bytecode, transferEventSignature)
 }

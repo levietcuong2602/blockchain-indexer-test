@@ -5,11 +5,12 @@ import (
 )
 
 type CreateCollectionBodyDtos struct {
+	Chain           string `form:"chain" json:"chain" xml:"chain" binding:"required"`
 	Name            string `form:"name" json:"name" xml:"name" binding:"required"`
 	Slug            string `form:"slug" json:"slug" xml:"slug" binding:"required"`
-	Metadata        string `form:"metadata" json:"metadata" xml:"metadata" binding:"required"`
+	Metadata        string `form:"metadata" json:"metadata" xml:"metadata"`
 	Contract        string `form:"contract" json:"contract" xml:"contract" binding:"required"`
-	TokenCount      int64  `form:"token_count" json:"token_count" xml:"token_count" binding:"required"`
+	TokenCount      int64  `form:"token_count" json:"token_count" xml:"token_count"`
 	MintedTimestamp int64  `form:"minted_timestamp" json:"minted_timestamp" xml:"minted_timestamp"`
 }
 

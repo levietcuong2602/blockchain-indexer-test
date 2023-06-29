@@ -3,7 +3,10 @@ package mumbai
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/unanoc/blockchain-indexer/pkg/client"
+	"github.com/unanoc/blockchain-indexer/pkg/primitives/numbers"
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/strings"
 	"github.com/unanoc/blockchain-indexer/pkg/primitives/types"
 	"math/big"
@@ -14,6 +17,7 @@ const (
 	MethodBlockByNumber      = "eth_getBlockByNumber"
 	MethodTransactionReceipt = "eth_getTransactionReceipt"
 	MethodClientVersion      = "web3_clientVersion"
+	MethodGetCode            = "eth_getCode"
 
 	rpcBatchSize = 45
 )
@@ -98,4 +102,14 @@ func (c *Client) GetVersion() (string, error) {
 	}
 
 	return resp, nil
+}
+
+func (c *Client) GetByteCode(account common.Address, blockNumber *big.Int) ([]byte, error) {
+	var result hexutil.Bytes
+	params := []interface{}{account.Hex(), numbers.ToBlockNumArg(blockNumber)}
+	result, err := c.RPCCallRaw(MethodGetCode, params)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

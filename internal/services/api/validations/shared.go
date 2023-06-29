@@ -2,6 +2,7 @@ package validations
 
 const (
 	ErrInvalidAddress    = "invalid address"
+	ErrInvalidName       = "invalid name"
 	ErrInvalidPage       = "invalid page"
 	ErrInvalidLimit      = "invalid limit"
 	ErrInvalidChain      = "invalid chain"
